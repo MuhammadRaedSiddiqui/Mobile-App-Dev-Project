@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EstateEase — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* Colors — Airbnb reference (DESIGN.md) */
+    --rausch: #ff385c;
+    --rausch-600: #e00b41;
+    --hof: #222222;
+    --foggy: #6a6a6a;
+    --grey-500: #c1c1c1;
+    --bebe: #ebebeb;
+    --deco: #dddddd;
+    --faint: #f7f7f7;
+    --white: #ffffff;
+
+    --font: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+    /* radii */
+    --r-card: 12px;
+    --r-input: 8px;
+    --r-full: 9999px;
+
+    --shadow-search: 0 0 0 1px rgba(0,0,0,0.02), 0 2px 6px rgba(0,0,0,0.04), 0 4px 8px rgba(0,0,0,0.10);
+    --shadow-overlay: 0 8px 28px rgba(0,0,0,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    background: var(--faint);
+    color: var(--hof);
+    -webkit-font-smoothing: antialiased;
+    font-size: 14px; line-height: 1.43;
+  }
+  ::selection { background: var(--rausch); color: #fff; }
+  a { color: inherit; text-decoration: none; }
+
+  .wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+
+  /* ---------------- Top nav ---------------- */
+  .nav {
+    position: sticky; top: 0; z-index: 60; background: var(--white);
+    border-bottom: 1px solid var(--bebe);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 80px; }
+  .logo { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; color: var(--rausch); }
+  .logo svg { width: 28px; height: 28px; display: block; }
+  .nav-tabs { display: flex; gap: 6px; }
+  .nav-tab {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    padding: 6px 12px 10px; color: var(--foggy); font-size: 12px; font-weight: 500;
+    position: relative; cursor: pointer;
+  }
+  .nav-tab svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .nav-tab.on { color: var(--hof); }
+  .nav-tab.on::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 0; height: 2px; background: var(--hof); border-radius: 2px; }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-link { font-size: 14px; font-weight: 500; padding: 10px 14px; border-radius: var(--r-full); }
+  .nav-link:hover { background: var(--faint); }
+  .icon-btn { width: 40px; height: 40px; border-radius: var(--r-full); background: var(--faint); display: grid; place-items: center; border: none; cursor: pointer; }
+  .icon-btn:hover { background: var(--bebe); }
+  .icon-btn svg { width: 18px; height: 18px; stroke: var(--hof); fill: none; stroke-width: 1.8; }
+  @media (max-width: 860px){ .nav-tabs { display: none; } .nav-link { display: none; } }
+
+  /* ---------------- Hero: the search capsule IS the hero ---------------- */
+  .hero { padding: 64px 0 40px; text-align: center; }
+  .hero h1 {
+    font-size: clamp(28px, 4vw, 40px); font-weight: 700; letter-spacing: -0.03em;
+    line-height: 1.08; color: var(--hof); max-width: 16ch; margin: 0 auto 12px;
+  }
+  .hero p { font-size: 16px; color: var(--foggy); max-width: 46ch; margin: 0 auto 34px; }
+
+  .capsule {
+    max-width: 880px; margin: 0 auto; background: var(--white);
+    border-radius: var(--r-full); box-shadow: var(--shadow-search);
+    display: flex; align-items: stretch; padding: 8px 8px 8px 0; text-align: left;
+    border: 1px solid var(--bebe);
+  }
+  .cap-field { padding: 12px 22px; flex: 1; border-radius: var(--r-full); cursor: pointer; min-width: 0; }
+  .cap-field:hover { background: var(--faint); }
+  .cap-field + .cap-field { border-left: 1px solid var(--bebe); }
+  .cap-field .cf-label { font-size: 12px; font-weight: 600; color: var(--hof); }
+  .cap-field .cf-val { font-size: 14px; color: var(--foggy); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cap-submit {
+    flex: none; width: 52px; height: 52px; align-self: center; margin-right: 4px;
+    border-radius: var(--r-full); background: var(--rausch); border: none; cursor: pointer;
+    display: grid; place-items: center; transition: background .15s ease;
+  }
+  .cap-submit:hover { background: var(--rausch-600); }
+  .cap-submit svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 2.4; }
+  @media (max-width: 720px){
+    .capsule { flex-direction: column; border-radius: 22px; padding: 6px; gap: 2px; }
+    .cap-field + .cap-field { border-left: none; border-top: 1px solid var(--bebe); }
+    .cap-field { border-radius: 16px; }
+    .cap-submit { width: 100%; height: 46px; margin: 6px 0 0; border-radius: var(--r-full); }
+  }
+
+  /* ---------------- Section rows ---------------- */
+  section { padding: 40px 0; }
+  .sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .sec-head h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: 8px; }
+  .sec-head h2 svg { width: 18px; height: 18px; stroke: var(--hof); fill: none; stroke-width: 2.2; }
+  .sec-arrows { display: flex; gap: 8px; }
+  .arrow { width: 32px; height: 32px; border-radius: var(--r-full); background: var(--white); border: 1px solid var(--bebe); display: grid; place-items: center; cursor: pointer; box-shadow: var(--shadow-search); }
+  .arrow svg { width: 14px; height: 14px; stroke: var(--hof); fill: none; stroke-width: 2.4; }
+
+  .row {
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 1fr);
+    gap: 20px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .row::-webkit-scrollbar { display: none; }
+  @media (min-width: 1000px){ .row.six { grid-auto-columns: minmax(0, 1fr); grid-template-columns: repeat(5, 1fr); grid-auto-flow: row; overflow: visible; } }
+
+  /* ---------------- Property card (Airbnb) ---------------- */
+  .card { scroll-snap-align: start; cursor: pointer; }
+  .card .thumb {
+    position: relative; width: 100%; aspect-ratio: 1/1; border-radius: var(--r-card);
+    overflow: hidden; background: var(--deco);
+  }
+  .card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .badge-fav {
+    position: absolute; top: 12px; left: 12px; background: var(--white); color: var(--hof);
+    font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: var(--r-full);
+    box-shadow: var(--shadow-search); display: inline-flex; align-items: center; gap: 6px;
+  }
+  .badge-fav .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--hof); }
+  .badge-fav.aging { color: var(--foggy); }
+  .badge-fav.aging .dot { background: var(--grey-500); }
+  .heart { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; display: grid; place-items: center; cursor: pointer; }
+  .heart svg { width: 24px; height: 24px; stroke: #fff; stroke-width: 2; fill: rgba(0,0,0,0.28); }
+  .heart.on svg { fill: var(--rausch); stroke: #fff; }
+  .card .info { padding-top: 10px; }
+  .card .ci-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .card .ci-title { font-size: 14px; font-weight: 600; color: var(--hof); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .ci-verify { font-size: 12px; color: var(--foggy); flex: none; }
+  .card .ci-meta { font-size: 14px; color: var(--foggy); margin-top: 1px; }
+  .card .ci-price { font-size: 14px; color: var(--hof); margin-top: 5px; }
+  .card .ci-price b { font-weight: 600; }
+  .card .ci-true { color: var(--foggy); }
+
+  /* ---------------- Phones ---------------- */
+  .screens { background: var(--white); border-top: 1px solid var(--bebe); border-bottom: 1px solid var(--bebe); }
+  .screens .lead { max-width: 620px; margin-bottom: 8px; }
+  .screens .lead h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; }
+  .screens .lead p { color: var(--foggy); font-size: 16px; margin-top: 8px; }
+
+  .device-scroll { display: flex; gap: 36px; overflow-x: auto; padding: 30px 4px 8px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .device-scroll::-webkit-scrollbar { display: none; }
+  .device-col { flex: none; scroll-snap-align: center; }
+  .device-cap { text-align: center; margin-top: 18px; }
+  .device-cap b { display: block; font-size: 14px; font-weight: 600; }
+  .device-cap span { font-size: 13px; color: var(--foggy); }
+
+  .phone { width: 316px; height: 648px; background: var(--hof); border-radius: 46px; padding: 10px; position: relative; }
+  .phone .screen { width: 100%; height: 100%; background: var(--white); border-radius: 37px; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+  .notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 100px; height: 24px; background: var(--hof); border-radius: 0 0 14px 14px; z-index: 30; }
+  .statusbar { display: flex; justify-content: space-between; align-items: center; padding: 12px 22px 2px; font-size: 12px; font-weight: 600; color: var(--hof); }
+  .statusbar .r { display: flex; gap: 4px; align-items: center; font-weight: 600; }
+  .app { flex: 1; overflow: hidden; padding: 8px 16px 14px; }
+
+  /* app search pill */
+  .app-search { display: flex; align-items: center; gap: 10px; background: var(--white); border: 1px solid var(--bebe); border-radius: var(--r-full); padding: 11px 16px; box-shadow: var(--shadow-search); }
+  .app-search svg { width: 16px; height: 16px; stroke: var(--hof); fill: none; stroke-width: 2.2; flex: none; }
+  .app-search .as-t { font-size: 13px; font-weight: 600; }
+  .app-search .as-s { font-size: 12px; color: var(--foggy); }
+
+  .app-tabs { display: flex; gap: 20px; margin-top: 16px; border-bottom: 1px solid var(--bebe); }
+  .app-tab { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-bottom: 10px; font-size: 11px; color: var(--foggy); position: relative; white-space: nowrap; }
+  .app-tab svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+  .app-tab.on { color: var(--hof); font-weight: 500; }
+  .app-tab.on::after { content:""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--hof); }
+
+  .app-card { margin-top: 16px; }
+  .app-card .t { position: relative; width: 100%; aspect-ratio: 20/13; border-radius: var(--r-card); overflow: hidden; background: var(--deco); }
+  .app-card .t img { width: 100%; height: 100%; object-fit: cover; }
+  .app-card .info { padding-top: 9px; }
+  .app-card .row1 { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .app-card .ttl { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .app-card .vf { font-size: 12px; color: var(--foggy); flex: none; }
+  .app-card .mt { font-size: 13px; color: var(--foggy); margin-top: 1px; }
+  .app-card .pr { font-size: 14px; margin-top: 4px; }
+  .app-card .pr b { font-weight: 600; }
+  .app-card .pr .tr { color: var(--foggy); }
+
+  .tabbar { display: flex; justify-content: space-around; padding: 10px 6px 18px; border-top: 1px solid var(--bebe); background: var(--white); }
+  .tb { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: var(--foggy); }
+  .tb svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+  .tb.on { color: var(--rausch); }
+
+  /* detail screen */
+  .d-hero { position: relative; margin: -8px -16px 0; aspect-ratio: 20/15; background: var(--deco); overflow: hidden; }
+  .d-hero img { width: 100%; height: 100%; object-fit: cover; }
+  .d-top { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; }
+  .d-circ { width: 34px; height: 34px; border-radius: var(--r-full); background: var(--white); display: grid; place-items: center; box-shadow: var(--shadow-search); }
+  .d-circ svg { width: 16px; height: 16px; stroke: var(--hof); fill: none; stroke-width: 2.2; }
+  .d-count { position: absolute; bottom: 12px; right: 12px; background: rgba(34,34,34,0.7); color: #fff; font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: var(--r-full); }
+  .d-title { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-top: 16px; line-height: 1.2; }
+  .d-sub { font-size: 14px; color: var(--foggy); margin-top: 3px; }
+  .d-verify { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; font-size: 13px; font-weight: 500; color: var(--hof); background: var(--faint); padding: 7px 12px; border-radius: var(--r-full); }
+  .d-verify .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--hof); }
+  .hr { height: 1px; background: var(--bebe); margin: 16px 0; }
+  .facts { display: flex; gap: 18px; }
+  .fact b { font-size: 15px; font-weight: 600; display: block; }
+  .fact span { font-size: 12px; color: var(--foggy); }
+
+  /* true-cost as clean list (not a receipt — monochrome, hairlines) */
+  .cost h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .cost .cl { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--bebe); font-size: 14px; }
+  .cost .cl .k { color: var(--foggy); }
+  .cost .cl .v { font-weight: 500; }
+  .cost .total { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 0; }
+  .cost .total .k { font-weight: 600; }
+  .cost .total .v { font-weight: 700; font-size: 18px; }
+  .cost .note { font-size: 12px; color: var(--foggy); margin-top: 6px; }
+
+  .d-bar { position: absolute; left: 0; right: 0; bottom: 0; background: var(--white); border-top: 1px solid var(--bebe); padding: 12px 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .d-bar .pinfo b { font-size: 15px; font-weight: 700; }
+  .d-bar .pinfo span { font-size: 12px; color: var(--foggy); display: block; }
+  .btn-primary { background: var(--rausch); color: #fff; border: none; border-radius: var(--r-input); padding: 12px 22px; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn-primary:hover { background: var(--rausch-600); }
+  .btn-ghost { background: transparent; border: 1px solid var(--hof); color: var(--hof); border-radius: var(--r-input); padding: 11px 16px; font-family: var(--font); font-size: 14px; font-weight: 500; cursor: pointer; }
+
+  /* agent dashboard */
+  .a-h { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+  .a-av { width: 46px; height: 46px; border-radius: var(--r-full); background: var(--deco); display: grid; place-items: center; font-weight: 600; font-size: 18px; color: var(--hof); overflow: hidden; }
+  .a-name { font-size: 16px; font-weight: 600; }
+  .a-role { font-size: 12px; color: var(--foggy); }
+  .a-stats { display: flex; gap: 20px; margin-top: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--bebe); }
+  .a-stat b { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; display: block; }
+  .a-stat span { font-size: 12px; color: var(--foggy); }
+  .a-sech { font-size: 16px; font-weight: 600; margin: 18px 0 12px; display: flex; justify-content: space-between; align-items: baseline; }
+  .a-sech .s { font-size: 12px; color: var(--foggy); font-weight: 400; }
+
+  .qrow { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--bebe); }
+  .q-t { width: 52px; height: 52px; border-radius: var(--r-input); overflow: hidden; background: var(--deco); flex: none; }
+  .q-t img { width: 100%; height: 100%; object-fit: cover; }
+  .q-i { flex: 1; min-width: 0; }
+  .q-ttl { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .q-m { font-size: 12px; color: var(--foggy); margin-top: 2px; }
+  .q-m.attn { color: var(--rausch); font-weight: 500; }
+  .q-btn { flex: none; border: none; border-radius: var(--r-full); padding: 9px 16px; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; }
+  .q-btn.act { background: var(--rausch); color: #fff; }
+  .q-btn.done { background: transparent; border: 1px solid var(--bebe); color: var(--foggy); }
+
+  /* freshness explainer */
+  .fresh .lead { max-width: 620px; }
+  .fresh .lead h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; }
+  .fresh .lead p { color: var(--foggy); font-size: 16px; margin-top: 8px; }
+  .fgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 28px; }
+  .fcard { background: var(--white); border: 1px solid var(--bebe); border-radius: var(--r-card); padding: 24px; }
+  .fcard .pill { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: var(--r-full); background: var(--faint); }
+  .fcard .pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .fcard.fresh-c .pill .dot { background: var(--hof); }
+  .fcard.aging-c .pill { color: var(--foggy); }
+  .fcard.aging-c .pill .dot { background: var(--grey-500); }
+  .fcard.stale-c .pill { color: var(--rausch); background: #fff0f2; }
+  .fcard.stale-c .pill .dot { background: var(--rausch); }
+  .fcard .rng { font-size: 12px; color: var(--foggy); margin: 16px 0 6px; }
+  .fcard h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+  .fcard p { font-size: 14px; color: var(--foggy); margin-top: 8px; }
+  @media (max-width: 860px){ .fgrid { grid-template-columns: 1fr; } }
+
+  /* footer */
+  footer { background: var(--faint); border-top: 1px solid var(--bebe); padding: 48px 0 28px; }
+  .fcols { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 30px; }
+  .fcol h5 { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+  .fcol a { display: block; font-size: 14px; color: var(--foggy); padding: 5px 0; }
+  .fcol a:hover { color: var(--hof); }
+  .fcol .logo { margin-bottom: 12px; }
+  .fcol .blurb { font-size: 14px; color: var(--foggy); max-width: 30ch; }
+  .fbar { display: flex; justify-content: space-between; align-items: center; margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--bebe); font-size: 13px; color: var(--foggy); flex-wrap: wrap; gap: 12px; }
+  .fbar .locale { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; color: var(--hof); }
+  .fbar .locale svg { width: 16px; height: 16px; stroke: var(--hof); fill: none; stroke-width: 1.8; }
+  @media (max-width: 860px){ .fcols { grid-template-columns: 1fr 1fr; } }
+
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce){ .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="logo" href="#">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 1c2.6 0 4.6 1.9 6 5.2 3.3 7.6 6 12.2 6 16.1 0 4.2-3 6.7-6.4 6.7-2.1 0-3.9-1.2-5.6-3.4C14.3 27.8 12.5 29 10.4 29 7 29 4 26.5 4 22.3 4 18.4 6.7 13.8 10 6.2 11.4 2.9 13.4 1 16 1zm0 2.6c-1.3 0-2.5 1.2-3.6 3.9C9.2 14.6 6.6 19 6.6 22.3c0 2.7 1.8 4.1 3.8 4.1 1.5 0 2.9-1.1 4.2-3.2-2-2.7-3.5-5.6-3.5-8 0-2.9 2-4.6 4.9-4.6s4.9 1.7 4.9 4.6c0 2.4-1.5 5.3-3.5 8 1.3 2.1 2.7 3.2 4.2 3.2 2 0 3.8-1.4 3.8-4.1 0-3.3-2.6-7.7-5.8-14.8C18.5 4.8 17.3 3.6 16 3.6zm0 8.7c-1.5 0-2.3.8-2.3 2.1 0 1.5 1 3.6 2.3 5.5 1.3-1.9 2.3-4 2.3-5.5 0-1.3-.8-2.1-2.3-2.1z"/></svg>
+        EstateEase
+      </a>
+      <nav class="nav-tabs">
+        <span class="nav-tab on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>All</span>
+        <span class="nav-tab"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 14h16"/></svg>1-Bed</span>
+        <span class="nav-tab"><svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>Portions</span>
+        <span class="nav-tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/></svg>Shared</span>
+        <span class="nav-tab"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 8h6"/></svg>Studios</span>
+      </nav>
+      <div class="nav-right">
+        <a class="nav-link" href="#">Become an agent</a>
+        <button class="icon-btn" aria-label="Language"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></button>
+        <button class="icon-btn" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO: search capsule is the hero -->
+  <section class="hero">
+    <div class="wrap">
+      <h1>Rentals in Karachi, verified this week.</h1>
+      <p>Only listings an agent re-confirmed — with the true monthly cost, before you call.</p>
+      <div class="capsule reveal in" role="search">
+        <div class="cap-field"><div class="cf-label">Where</div><div class="cf-val">Gulshan-e-Iqbal</div></div>
+        <div class="cap-field"><div class="cf-label">Budget</div><div class="cf-val">Up to PKR 50,000</div></div>
+        <div class="cap-field"><div class="cf-label">Move-in</div><div class="cf-val">Add dates</div></div>
+        <div class="cap-field"><div class="cf-label">Type</div><div class="cf-val">1-Bed flat</div></div>
+        <button class="cap-submit" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROW: Fresh listings -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Fresh in Gulshan-e-Iqbal <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></h2>
+        <div class="sec-arrows"><span class="arrow"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></span><span class="arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></div>
+      </div>
+      <div class="row six" id="row-fresh"></div>
+    </div>
+  </section>
+
+  <!-- PHONES -->
+  <section class="screens">
+    <div class="wrap">
+      <div class="lead reveal">
+        <h2>The app, screen by screen</h2>
+        <p>Same visual language on mobile — quiet white surfaces, one coral action, and the trust cues woven into familiar card patterns.</p>
+      </div>
+      <div class="device-scroll reveal">
+
+        <!-- HOME -->
+        <div class="device-col">
+          <div class="phone"><div class="notch"></div><div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="r">5G ▪▪▪</span></div>
+            <div class="app">
+              <div class="app-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+                <div><div class="as-t">Gulshan-e-Iqbal</div><div class="as-s">1-Bed · Up to PKR 50,000</div></div>
+              </div>
+              <div class="app-tabs">
+                <span class="app-tab on"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 14h16"/></svg>1-Bed</span>
+                <span class="app-tab"><svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13"/></svg>Portions</span>
+                <span class="app-tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/></svg>Shared</span>
+                <span class="app-tab"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="2"/></svg>Studios</span>
+              </div>
+              <div class="app-card">
+                <div class="t"><span class="badge-fav"><span class="dot"></span>Verified 2 days ago</span><span class="heart"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5 6 5c2 0 3 1.2 4 2.5C11 6.2 12 5 14 5c3.5 0 5 4 3.5 7-2.5 4.5-9.5 9-9.5 9z"/></svg></span><img alt="1-bed flat interior" data-img="a"></div>
+                <div class="info">
+                  <div class="row1"><span class="ttl">1-Bed Flat, Block 13</span></div>
+                  <div class="mt">Gulshan-e-Iqbal · 650 sq ft</div>
+                  <div class="pr"><b>PKR 38,000</b> <span class="tr">· 47,000 true monthly</span></div>
+                </div>
+              </div>
+              <div class="app-card">
+                <div class="t"><span class="badge-fav aging"><span class="dot"></span>Verified 11 days ago</span><span class="heart on"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5 6 5c2 0 3 1.2 4 2.5C11 6.2 12 5 14 5c3.5 0 5 4 3.5 7-2.5 4.5-9.5 9-9.5 9z"/></svg></span><img alt="portion" data-img="b"></div>
+                <div class="info">
+                  <div class="row1"><span class="ttl">Ground Portion, PECHS</span></div>
+                  <div class="mt">Block 6 · 2 bed · 1,100 sq ft</div>
+                  <div class="pr"><b>PKR 55,000</b> <span class="tr">· 66,500 true monthly</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="tabbar">
+              <span class="tb on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Explore</span>
+              <span class="tb"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5 6 5c2 0 3 1.2 4 2.5C11 6.2 12 5 14 5c3.5 0 5 4 3.5 7-2.5 4.5-9.5 9-9.5 9z"/></svg>Saved</span>
+              <span class="tb"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search</span>
+              <span class="tb"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profile</span>
+            </div>
+          </div></div>
+          <div class="device-cap"><b>Explore — Seeker</b><span>Verified-first feed · Ayesha's view</span></div>
+        </div>
+
+        <!-- DETAIL -->
+        <div class="device-col">
+          <div class="phone"><div class="notch"></div><div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="r">5G ▪▪▪</span></div>
+            <div class="app" style="padding-bottom:0; overflow:hidden;">
+              <div class="d-hero">
+                <img alt="1-bed flat" data-img="a">
+                <div class="d-top"><span class="d-circ"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></span><span class="d-circ"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5 6 5c2 0 3 1.2 4 2.5C11 6.2 12 5 14 5c3.5 0 5 4 3.5 7-2.5 4.5-9.5 9-9.5 9z"/></svg></span></div>
+                <span class="d-count">1 / 8</span>
+              </div>
+              <div class="d-title">1-Bed Flat, Block 13</div>
+              <div class="d-sub">Gulshan-e-Iqbal, Karachi · 650 sq ft</div>
+              <span class="d-verify"><span class="dot"></span>Verified 2 days ago by Danish</span>
+              <div class="hr"></div>
+              <div class="cost">
+                <h4>What you'll actually pay</h4>
+                <div class="cl"><span class="k">Rent</span><span class="v">PKR 38,000</span></div>
+                <div class="cl"><span class="k">Maintenance</span><span class="v">PKR 2,500</span></div>
+                <div class="cl"><span class="k">Utilities (est.)</span><span class="v">PKR 6,500</span></div>
+                <div class="total"><span class="k">True monthly</span><span class="v">PKR 47,000</span></div>
+                <div class="note">+ Deposit PKR 76,000 (2 months, refundable) — one-time, not monthly.</div>
+              </div>
+            </div>
+            <div class="d-bar">
+              <div class="pinfo"><b>PKR 47,000</b><span>true monthly</span></div>
+              <div style="display:flex; gap:8px;"><button class="btn-ghost">Report</button><button class="btn-primary">Contact agent</button></div>
+            </div>
+          </div></div>
+          <div class="device-cap"><b>Listing detail</b><span>True-cost breakdown &amp; verification</span></div>
+        </div>
+
+        <!-- AGENT -->
+        <div class="device-col">
+          <div class="phone"><div class="notch"></div><div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="r">5G ▪▪▪</span></div>
+            <div class="app">
+              <div class="a-h"><div class="a-av">D</div><div><div class="a-name">Danish Ahmed</div><div class="a-role">Agent · Gulshan &amp; Johar</div></div></div>
+              <div class="a-stats">
+                <div class="a-stat"><b>41</b><span>Active</span></div>
+                <div class="a-stat"><b>6</b><span>Need verify</span></div>
+                <div class="a-stat"><b>1.2k</b><span>Views / wk</span></div>
+              </div>
+              <div class="a-sech">Verification queue <span class="s">tap to re-confirm</span></div>
+              <div class="qrow">
+                <div class="q-t"><img alt="studio" data-img="c"></div>
+                <div class="q-i"><div class="q-ttl">Studio, Johar Block 15</div><div class="q-m attn">Stale · 17 days — hidden from browse</div></div>
+                <button class="q-btn act">Verify</button>
+              </div>
+              <div class="qrow">
+                <div class="q-t"><img alt="portion" data-img="b"></div>
+                <div class="q-i"><div class="q-ttl">2-Bed Portion, Gulshan</div><div class="q-m">Aging · 10 days</div></div>
+                <button class="q-btn act">Verify</button>
+              </div>
+              <div class="qrow">
+                <div class="q-t"><img alt="flat" data-img="a"></div>
+                <div class="q-i"><div class="q-ttl">1-Bed Flat, Block 13</div><div class="q-m">Fresh · verified 2 days ago</div></div>
+                <button class="q-btn done">Done</button>
+              </div>
+              <div class="a-sech">Reports <span class="s">0 open</span></div>
+              <div class="q-m" style="color:var(--foggy)">No listings reported unavailable. Re-verifying a listing clears any report automatically.</div>
+            </div>
+            <div class="tabbar">
+              <span class="tb on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Listings</span>
+              <span class="tb"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>Queue</span>
+              <span class="tb"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add</span>
+              <span class="tb"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profile</span>
+            </div>
+          </div></div>
+          <div class="device-cap"><b>Agent dashboard</b><span>One-tap verify · Danish's view</span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FRESHNESS -->
+  <section class="fresh">
+    <div class="wrap">
+      <div class="lead reveal">
+        <h2>Freshness, told without shouting</h2>
+        <p>A quiet status you can trust — computed from the last verified date. Coral appears only when a listing needs attention.</p>
+      </div>
+      <div class="fgrid reveal">
+        <div class="fcard fresh-c">
+          <span class="pill"><span class="dot"></span>Verified 2 days ago</span>
+          <div class="rng">0 – 7 days</div>
+          <h3>Fresh</h3>
+          <p>Re-confirmed within the week. Sits at the top of every feed with a clean verified pill.</p>
+        </div>
+        <div class="fcard aging-c">
+          <span class="pill"><span class="dot"></span>Verified 11 days ago</span>
+          <div class="rng">8 – 14 days</div>
+          <h3>Aging</h3>
+          <p>Still shown, quietly de-emphasised in grey. The agent gets a nudge to re-verify.</p>
+        </div>
+        <div class="fcard stale-c">
+          <span class="pill"><span class="dot"></span>Needs verifying</span>
+          <div class="rng">15 days +</div>
+          <h3>Stale</h3>
+          <p>Dropped from default browse and flagged in coral on the agent's side — the one place action is due.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <div class="fcols">
+        <div class="fcol">
+          <a class="logo" href="#"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 1c2.6 0 4.6 1.9 6 5.2 3.3 7.6 6 12.2 6 16.1 0 4.2-3 6.7-6.4 6.7-2.1 0-3.9-1.2-5.6-3.4C14.3 27.8 12.5 29 10.4 29 7 29 4 26.5 4 22.3 4 18.4 6.7 13.8 10 6.2 11.4 2.9 13.4 1 16 1z"/></svg>EstateEase</a>
+          <p class="blurb">Verified rental discovery for Karachi's young professionals.</p>
+        </div>
+        <div class="fcol"><h5>Discover</h5><a href="#">1-Bed flats</a><a href="#">Portions</a><a href="#">Shared rooms</a><a href="#">Studios</a></div>
+        <div class="fcol"><h5>Agents</h5><a href="#">List a property</a><a href="#">Verification</a><a href="#">Dashboard</a></div>
+        <div class="fcol"><h5>Support</h5><a href="#">Help centre</a><a href="#">Report a listing</a><a href="#">Contact</a></div>
+      </div>
+      <div class="fbar">
+        <span>© 2026 EstateEase · Karachi</span>
+        <span class="locale"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg> English (PK) · PKR</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Photography-first: try Unsplash, fall back to muted skeleton surface (#dddddd) per DESIGN.md
+    const IMGS = {
+      a: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=70",
+      b: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=700&q=70",
+      c: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=70",
+      d: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=700&q=70",
+      e: "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?auto=format&fit=crop&w=700&q=70",
+      f: "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=700&q=70"
+    };
+    document.querySelectorAll('img[data-img]').forEach(img => {
+      img.src = IMGS[img.dataset.img] || IMGS.a;
+      img.loading = "lazy";
+      img.onerror = () => { img.style.display = 'none'; };
+    });
+
+    // Build the fresh row of cards
+    const cards = [
+      {img:'a', t:'1-Bed Flat, Block 13', m:'Gulshan-e-Iqbal · 650 sq ft', p:'38,000', tr:'47,000', vf:'Verified 2d', fav:false, aging:false},
+      {img:'d', t:'Studio, Johar Town', m:'Block 15 · 420 sq ft', p:'26,000', tr:'31,500', vf:'Verified 4d', fav:true, aging:false},
+      {img:'b', t:'Ground Portion, PECHS', m:'Block 6 · 2 bed · 1,100 sq ft', p:'55,000', tr:'66,500', vf:'Verified 11d', fav:false, aging:true},
+      {img:'c', t:'Shared Room, Gulshan', m:'Block 10 · roommate · furnished', p:'18,000', tr:'22,000', vf:'Verified 3d', fav:false, aging:false},
+      {img:'f', t:'1-Bed Flat, Johar', m:'Block 2 · 700 sq ft', p:'42,000', tr:'50,500', vf:'Verified 6d', fav:false, aging:false}
+    ];
+    const row = document.getElementById('row-fresh');
+    row.innerHTML = cards.map(c => `
+      <article class="card">
+        <div class="thumb">
+          <span class="badge-fav ${c.aging?'aging':''}"><span class="dot"></span>${c.vf}</span>
+          <span class="heart ${c.fav?'on':''}"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5 6 5c2 0 3 1.2 4 2.5C11 6.2 12 5 14 5c3.5 0 5 4 3.5 7-2.5 4.5-9.5 9-9.5 9z"/></svg></span>
+          <img alt="${c.t}" src="${IMGS[c.img]}" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="info">
+          <div class="ci-top"><span class="ci-title">${c.t}</span></div>
+          <div class="ci-meta">${c.m}</div>
+          <div class="ci-price"><b>PKR ${c.p}</b> <span class="ci-true">· ${c.tr} true monthly</span></div>
+        </div>
+      </article>`).join('');
+
+    // hearts toggle
+    document.addEventListener('click', e => {
+      const h = e.target.closest('.heart');
+      if (h) h.classList.toggle('on');
+    });
+
+    // reveal
+    const io = new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting){ x.target.classList.add('in'); io.unobserve(x.target);} }), {threshold:0.1});
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>

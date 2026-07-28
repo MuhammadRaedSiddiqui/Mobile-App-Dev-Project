@@ -1,0 +1,96 @@
+{
+  "//": "Estate Ease Firestore composite indexes. Deploy: firebase deploy --only firestore:indexes. Phase 7 adds bedrooms/area/tags composites; unsupported multi-range combos are refined client-side after a bounded indexed query (see docs/filter-strategy.md).",
+  "indexes": [
+    {
+      "//": "Default browse: active listings ranked by recency of verification.",
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "lastVerifiedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "//": "Category browse: active listings within a category, most-recently verified first.",
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "categoryId", "order": "ASCENDING" },
+        { "fieldPath": "lastVerifiedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "//": "Price-sorted browse within category (filters + range).",
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "categoryId", "order": "ASCENDING" },
+        { "fieldPath": "price", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "//": "Whole-token title search (array-contains) constrained to active listings.",
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "titleKeywords", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "lastVerifiedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "//": "Agent dashboard: an agent's own listings by status, newest first.",
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "agentId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "//": "Phase 7 — bedroom filter within active listings.",
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "bedrooms", "order": "ASCENDING" },
+        { "fieldPath": "lastVerifiedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "//": "Phase 7 — area range within category.",
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "categoryId", "order": "ASCENDING" },
+        { "fieldPath": "area", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "//": "Phase 7 — location tag (array-contains) on active listings.",
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "locationTags", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "lastVerifiedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "//": "Phase 7 — similar listings: category + city, freshness order.",
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "categoryId", "order": "ASCENDING" },
+        { "fieldPath": "location.city", "order": "ASCENDING" },
+        { "fieldPath": "lastVerifiedAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

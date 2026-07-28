@@ -1,0 +1,47 @@
+# ---- Dependencies ----
+node_modules/
+backend/node_modules/
+
+# ---- Expo / React Native ----
+.expo/
+.expo-shared/
+dist/
+web-build/
+*.jsbundle
+
+# ---- Native ----
+ios/
+android/
+*.orig.*
+
+# ---- Environment & secrets (NEVER commit) ----
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
+# Firebase Admin service-account key — backend only, never in source control
+**/serviceAccountKey.json
+**/*-firebase-adminsdk-*.json
+google-services.json
+GoogleService-Info.plist
+
+# ---- Build output ----
+backend/dist/
+*.tsbuildinfo
+
+# ---- Testing ----
+coverage/
+
+# ---- Logs ----
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# ---- OS / Editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

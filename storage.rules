@@ -1,0 +1,35 @@
+rules_version = '2';
+
+// Estate Ease Firebase Storage rules.
+//
+// Clients may READ public listing images and their own avatar.
+// ALL writes go through Express + Admin SDK (which bypasses these rules).
+// Do not add client write allowances.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Listing photos uploaded by agents via Express → listings/{agentId}/{file}
+    match /listings/{agentId}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // Profile avatars uploaded via Express → avatars/{uid}/{file}
+    match /avatars/{uid}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

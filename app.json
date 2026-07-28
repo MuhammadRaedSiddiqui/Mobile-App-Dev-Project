@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "Estate Ease",
+    "slug": "estate-ease",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "estateease",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.estateease.mobile",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Estate Ease needs the camera so agents can photograph rental listings.",
+        "NSPhotoLibraryUsageDescription": "Estate Ease needs photo library access so agents can upload listing images."
+      }
+    },
+    "android": {
+      "package": "app.estateease.mobile",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Estate Ease to access your photos for listing uploads.",
+          "cameraPermission": "Allow Estate Ease to use the camera for listing photos."
+        }
+      ]
+    ],
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "//": "Non-secret runtime config. Real values are injected from .env via app.config or EAS secrets in later phases.",
+      "apiBaseUrl": "http://localhost:4000/v1",
+      "useMockData": true,
+      "firebase": {
+        "apiKey": "",
+        "authDomain": "",
+        "projectId": "",
+        "storageBucket": "",
+        "messagingSenderId": "",
+        "appId": ""
+      }
+    }
+  }
+}

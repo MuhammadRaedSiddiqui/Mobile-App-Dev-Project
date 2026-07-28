@@ -1,0 +1,60 @@
+rules_version = '2';
+
+// Estate Ease Firestore Security Rules.
+//
+// Core architecture invariant: the client SDK may READ, but EVERY write goes
+// through Express + the Firebase Admin SDK (which bypasses these rules). So every
+// client write is denied here by omission — `allow write` never appears for a
+// client path. Do not add one.
+//
+// Deploy: firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Categories — public reference data, readable by any signed-in user.
+    match /categories/{categoryId} {
+      allow read: if isSignedIn();
+      allow write: if false; // seeded/maintained by Admin SDK only
+    }
+
+    // Listings — signed-in users may read only PUBLISHED (active) listings.
+    // Drafts and removed listings are never exposed to the client SDK; agents
+    // read their own non-public listings through Express.
+    match /listings/{listingId} {
+      allow read: if isSignedIn() && resource.data.status == 'active';
+      allow write: if false; // create/edit/delete/verify all go through Express
+
+      // Reports are write-through-Express only; a client cannot read others'
+      // reports, and cannot write its own directly.
+      match /reports/{reporterId} {
+        allow read: if isOwner(reporterId);
+        allow write: if false;
+      }
+    }
+
+    // Users — a user may read only their own profile document.
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false; // profile writes go through Express
+    }
+
+    // Favorites — a user may read only their own favorites.
+    match /favorites/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false; // save/unsave go through Express
+
+      match /items/{listingId} {
+        allow read: if isOwner(uid);
+        allow write: if false;
+      }
+    }
+  }
+}
