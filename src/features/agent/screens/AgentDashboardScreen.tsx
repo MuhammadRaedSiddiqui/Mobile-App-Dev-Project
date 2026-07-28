@@ -1,8 +1,17 @@
 import { useCallback, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Badge, Button, ErrorState, Screen } from '@/components/common';
+import { ErrorState, Screen } from '@/components/common';
+import { ListingCard } from '@/components/listing';
 import { colors, radii, spacing, typography } from '@/theme';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { invalidateBrowse } from '@/store/slices/metaSlice';
@@ -13,11 +22,20 @@ import type { MainStackParamList } from '@/navigation/types';
 
 type Nav = NativeStackNavigationProp<MainStackParamList>;
 
+const CARD_GAP = spacing.sm;
+
 export function AgentDashboardScreen() {
   const navigation = useNavigation<Nav>();
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
-  const name = user?.displayName?.split(' ')[0];
+  const initials = user?.displayName
+    ? user.displayName
+        .split(' ')
+        .map((w) => w[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    : '?';
 
   const [listings, setListings] = useState<Listing[]>([]);
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
@@ -42,7 +60,6 @@ export function AgentDashboardScreen() {
   );
 
   const active = listings.filter((l) => l.status === 'active');
-  const drafts = listings.filter((l) => l.status === 'draft');
   const needsVerifying = active.filter((l) => l.freshness.status !== 'fresh');
   const totalViews = active.reduce((sum, l) => sum + l.viewCount, 0);
   const viewLabel = totalViews > 999 ? `${(totalViews / 1000).toFixed(1)}k` : String(totalViews);
@@ -72,30 +89,54 @@ export function AgentDashboardScreen() {
   }
 
   return (
-    <Screen scroll>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.greeting}>{name ? `Hi ${name}` : 'Dashboard'}</Text>
-        <Text style={styles.subGreeting}>Your listings at a glance</Text>
-
-        <View style={styles.statRow}>
-          <Stat value={loading ? '—' : String(active.length)} label="Active" />
-          <Stat value={loading ? '—' : String(needsVerifying.length)} label="Needs verifying" />
-          <Stat value={loading ? '—' : viewLabel} label="Total views" />
+    <Screen>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.heading}>My listings</Text>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{initials}</Text>
+          </View>
         </View>
 
-        {drafts.length > 0 && (
-          <Text style={styles.draftNote}>
-            {drafts.length} draft{drafts.length === 1 ? '' : 's'} waiting to publish
-          </Text>
-        )}
+        {/* Stats Bento Grid */}
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Active</Text>
+            <View style={styles.statBottom}>
+              <Text style={styles.statValue}>{loading ? '—' : String(active.length)}</Text>
+              <Text style={styles.statIcon}>↗</Text>
+            </View>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Views</Text>
+            <View style={styles.statBottom}>
+              <Text style={styles.statValue}>{loading ? '—' : viewLabel}</Text>
+            </View>
+          </View>
+          <View style={[styles.statCard, styles.statCardAlert]}>
+            <View style={styles.statAlertHeader}>
+              <Text style={styles.statLabelAlert} numberOfLines={1}>
+                Needs verify
+              </Text>
+              <Text style={styles.statAlertIcon}>⚠</Text>
+            </View>
+            <View style={styles.statBottom}>
+              <Text style={styles.statValueAlert}>
+                {loading ? '—' : String(needsVerifying.length)}
+              </Text>
+            </View>
+          </View>
+        </View>
 
-        <View style={styles.queueHeader}>
+        {/* Verification Queue */}
+        <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Verification queue</Text>
-          <Button
-            label="+ New"
-            onPress={() => navigation.navigate('ListingForm', undefined)}
-            style={styles.newBtn}
-          />
+          {needsVerifying.length > 0 && (
+            <View style={styles.actionBadge}>
+              <Text style={styles.actionBadgeText}>Action required</Text>
+            </View>
+          )}
         </View>
 
         {needsVerifying.length === 0 ? (
@@ -103,95 +144,217 @@ export function AgentDashboardScreen() {
         ) : (
           needsVerifying.map((listing) => (
             <View key={listing.listingId} style={styles.queueRow}>
-              <View style={styles.queueMain}>
-                <Text style={styles.queueTitle} numberOfLines={1}>
+              <View style={styles.queueThumb}>
+                {listing.imageUrls[0] ? (
+                  <Image source={{ uri: listing.imageUrls[0] }} style={styles.queueThumbImg} />
+                ) : (
+                  <View style={styles.queueThumbPlaceholder} />
+                )}
+              </View>
+              <View style={styles.queueInfo}>
+                <Text style={styles.queueTitle} numberOfLines={2}>
                   {listing.title}
                 </Text>
-                <Badge
-                  label={
-                    listing.freshness.status.charAt(0).toUpperCase() +
-                    listing.freshness.status.slice(1)
-                  }
-                  tone={listing.freshness.status === 'stale' ? 'alert' : 'muted'}
-                  dot
-                />
+                <View style={styles.queueMeta}>
+                  <Text style={styles.queueMetaIcon}>
+                    {listing.freshness.status === 'stale' ? '⚠' : '⏱'}
+                  </Text>
+                  <View
+                    style={[
+                      styles.agingPill,
+                      listing.freshness.status === 'stale'
+                        ? styles.agingPillStale
+                        : styles.agingPillAging,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.agingPillText,
+                        listing.freshness.status === 'stale'
+                          ? styles.agingPillTextStale
+                          : styles.agingPillTextAging,
+                      ]}
+                    >
+                      {listing.freshness.status === 'stale' ? 'Stale' : 'Aging'}{' '}
+                      {listing.freshness.daysSince}d
+                    </Text>
+                  </View>
+                </View>
               </View>
               <Pressable
                 onPress={() => onVerify(listing)}
                 disabled={verifyingId === listing.listingId}
-                style={styles.verifyBtn}
+                style={styles.confirmBtn}
                 hitSlop={8}
               >
-                <Text style={styles.verifyText}>
-                  {verifyingId === listing.listingId ? '…' : 'Verify'}
+                <Text style={styles.confirmBtnText}>
+                  {verifyingId === listing.listingId ? '…' : '✓  Confirm'}
                 </Text>
               </Pressable>
             </View>
           ))
         )}
+
+        {/* All Listings */}
+        <View style={[styles.sectionHeader, { marginTop: spacing.xxl }]}>
+          <Text style={styles.sectionTitle}>All listings</Text>
+          <Pressable style={styles.filterBtn}>
+            <Text style={styles.filterText}>Filter ☰</Text>
+          </Pressable>
+        </View>
+
+        {listings.map((listing) => (
+          <ListingCard
+            key={listing.listingId}
+            listing={listing}
+            onPress={(l) => navigation.navigate('ListingForm', { listingId: l.listingId })}
+          />
+        ))}
+
+        <View style={{ height: 80 }} />
       </ScrollView>
+
+      {/* FAB */}
+      <Pressable
+        style={styles.fab}
+        onPress={() => navigation.navigate('ListingForm', undefined)}
+        accessibilityLabel="Add new listing"
+      >
+        <Text style={styles.fabIcon}>+</Text>
+      </Pressable>
     </Screen>
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <View style={styles.stat}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  greeting: { ...typography.heading, color: colors.textPrimary, marginTop: spacing.lg },
-  subGreeting: { ...typography.body, color: colors.textSecondary, marginTop: 2 },
-  statRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.xl },
-  stat: {
+  scroll: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg },
+
+  // Header
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.xl,
+  },
+  heading: { ...typography.heading, color: colors.textPrimary },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.surfaceMuted,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: { ...typography.ui, color: colors.textSecondary },
+
+  // Stats
+  statsRow: { flexDirection: 'row', gap: CARD_GAP, marginBottom: spacing.xxl },
+  statCard: {
     flex: 1,
-    padding: spacing.lg,
+    paddingHorizontal: spacing.sm + 2,
+    paddingVertical: spacing.md,
     borderRadius: radii.card,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
-    alignItems: 'center',
-    gap: spacing.xs,
+    justifyContent: 'space-between',
+    minHeight: 90,
+  },
+  statCardAlert: {
+    backgroundColor: colors.staleBg,
+    borderColor: colors.staleBg,
+  },
+  statLabel: { ...typography.caption, color: colors.textSecondary },
+  statLabelAlert: { ...typography.caption, color: colors.textPrimary },
+  statAlertHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  statAlertIcon: { fontSize: 12, color: colors.primary },
+  statBottom: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    marginTop: spacing.sm,
   },
   statValue: { ...typography.headingSm, color: colors.textPrimary },
-  statLabel: { ...typography.caption, color: colors.textSecondary, textAlign: 'center' },
-  draftNote: {
-    ...typography.caption,
-    color: colors.textSecondary,
-    marginTop: spacing.md,
-  },
-  queueHeader: {
+  statValueAlert: { ...typography.headingSm, color: colors.primary },
+  statIcon: { fontSize: 16, color: colors.textSecondary },
+
+  // Verification queue
+  sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: spacing.xxl,
     marginBottom: spacing.md,
   },
-  sectionTitle: { ...typography.headingSm, color: colors.textPrimary },
-  newBtn: { paddingHorizontal: spacing.lg },
-  emptyQueue: { ...typography.body, color: colors.textSecondary },
+  sectionTitle: { ...typography.subheading, color: colors.textPrimary },
+  actionBadge: {
+    backgroundColor: colors.staleBg,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: radii.pill,
+  },
+  actionBadgeText: { ...typography.caption, fontWeight: '600', color: colors.primary },
+  emptyQueue: { ...typography.body, color: colors.textSecondary, marginBottom: spacing.xl },
+
   queueRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    padding: spacing.lg,
+    padding: spacing.md,
     borderRadius: radii.card,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
     marginBottom: spacing.sm,
   },
-  queueMain: { flex: 1, gap: spacing.xs },
+  queueThumb: { width: 56, height: 56, borderRadius: radii.input, overflow: 'hidden' },
+  queueThumbImg: { width: '100%', height: '100%' },
+  queueThumbPlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.surfaceMuted,
+  },
+  queueInfo: { flex: 1, gap: 4 },
   queueTitle: { ...typography.bodyStrong, color: colors.textPrimary },
-  verifyBtn: {
+  queueMeta: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  queueMetaIcon: { fontSize: 12, color: colors.textSecondary },
+  agingPill: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: radii.pill },
+  agingPillAging: { backgroundColor: '#fef3c7' },
+  agingPillStale: { backgroundColor: colors.staleBg },
+  agingPillText: { ...typography.caption, fontWeight: '600' },
+  agingPillTextAging: { color: '#d97706' },
+  agingPillTextStale: { color: colors.stale },
+  confirmBtn: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: radii.button,
-    backgroundColor: colors.primary,
+    borderRadius: radii.input,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
   },
-  verifyText: { ...typography.caption, fontWeight: '700', color: colors.onPrimary },
+  confirmBtnText: { ...typography.ui, color: colors.textPrimary, fontSize: 14 },
+
+  // Filter
+  filterBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  filterText: { ...typography.ui, color: colors.textSecondary },
+
+  // FAB
+  fab: {
+    position: 'absolute',
+    bottom: 24,
+    right: spacing.lg,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+  },
+  fabIcon: { fontSize: 28, fontWeight: '500', color: colors.onPrimary, marginTop: -2 },
 });

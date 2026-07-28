@@ -1,20 +1,12 @@
-import { StyleSheet, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AgentDashboardScreen } from '@/features/agent/screens/AgentDashboardScreen';
-import { AgentListingsScreen } from '@/features/agent/screens/AgentListingsScreen';
+import { MessagesScreen } from '@/features/messages/screens/MessagesScreen';
 import { ProfileScreen } from '@/features/auth/screens/ProfileScreen';
+import { TabIcon } from '@/components/common';
 import { colors, typography } from '@/theme';
 import type { AgentTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<AgentTabParamList>();
-
-function tabIcon(glyph: string) {
-  const Icon = ({ color }: { color: string }) => (
-    <Text style={[styles.icon, { color }]}>{glyph}</Text>
-  );
-  Icon.displayName = `TabIcon(${glyph})`;
-  return Icon;
-}
 
 const screenOptions = {
   headerShown: false,
@@ -30,18 +22,31 @@ export function AgentTabs() {
       <Tab.Screen
         name="Dashboard"
         component={AgentDashboardScreen}
-        options={{ tabBarIcon: tabIcon('▦') }}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="home-work" color={color} focused={focused} />
+          ),
+        }}
       />
       <Tab.Screen
-        name="Listings"
-        component={AgentListingsScreen}
-        options={{ tabBarIcon: tabIcon('≣') }}
+        name="Inbox"
+        component={MessagesScreen}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="mail" color={color} focused={focused} />
+          ),
+          tabBarLabel: 'Inbox',
+        }}
       />
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarIcon: tabIcon('☺') }} />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="person" color={color} focused={focused} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  icon: { fontSize: 20 },
-});

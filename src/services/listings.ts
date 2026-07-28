@@ -118,11 +118,22 @@ function applyMockQuery(query: ListingQuery): Paginated<Listing> {
   items = items.filter((l) => fresh.includes(l.freshness.status));
 
   if (query.q && query.q.trim()) {
-    // Whole-lowercase-token match, mirroring the titleKeywords array-contains model.
     const tokens = query.q.toLowerCase().split(/\s+/).filter(Boolean);
     items = items.filter((l) => {
-      const titleTokens = l.title.toLowerCase().split(/\s+/);
-      return tokens.some((t) => titleTokens.includes(t));
+      // Prefix matching makes partial area searches useful: "G" and "Gul"
+      // match Gulshan-e-Iqbal and Gulistan-e-Johar, for example.
+      const searchableTerms = [
+        l.title,
+        l.location.area,
+        l.location.address,
+        l.location.city,
+        ...(l.locationTags ?? []),
+      ]
+        .join(' ')
+        .toLowerCase()
+        .split(/[^a-z0-9]+/)
+        .filter(Boolean);
+      return tokens.every((token) => searchableTerms.some((term) => term.startsWith(token)));
     });
   }
 
@@ -167,6 +178,19 @@ function applyMockQuery(query: ListingQuery): Paginated<Listing> {
 }
 
 export const listingsService = {
+  /** Area typeahead sourced from active listings while the app runs on mock data. */
+  getAreaSuggestions(prefix: string): string[] {
+    const normalized = prefix.trim().toLowerCase();
+    if (!normalized) return [];
+    return [
+      ...new Set(
+        MOCK_LISTINGS.filter((listing) => listing.status === 'active')
+          .map((listing) => listing.location.area)
+          .filter((area) => area.toLowerCase().startsWith(normalized)),
+      ),
+    ].sort((a, b) => a.localeCompare(b));
+  },
+
   async getCategories(): Promise<Category[]> {
     if (config.useMockData) return delay(MOCK_CATEGORIES);
     // Live: read the seeded `categories` collection via the client SDK (read-only,

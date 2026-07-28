@@ -13,3 +13,5 @@ export { notificationsService, mockPushToken } from './notifications';
 export type { NotificationPreferences, SavedSearch, SavedSearchQuery } from './notifications';
 export { mediaService, MEDIA_LIMITS } from './media';
 export type { LocalImage } from './media';
+export { messagesService } from './messages';
+export type { Message, MessageThreadSummary } from './messages';

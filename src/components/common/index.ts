@@ -7,3 +7,4 @@ export { ErrorState } from './ErrorState';
 export { Screen } from './Screen';
 export { ComingSoon } from './ComingSoon';
 export { OfflineBanner } from './OfflineBanner';
+export { TabIcon } from './TabIcon';

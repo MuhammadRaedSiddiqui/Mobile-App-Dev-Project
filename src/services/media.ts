@@ -2,8 +2,8 @@
  * Listing media pipeline.
  *
  * Flow: pick (camera/gallery) → compress toward ≤200 KB WebP → upload via Express
- * (multipart). Mock mode skips the network and returns synthetic CDN URLs after the
- * same local compression step so the form works without a running API.
+ * (multipart). Mock mode skips transformation and network upload, keeping the
+ * original picker URI so photos remain visible without Firebase Storage.
  */
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -56,11 +56,10 @@ export async function compressImage(uri: string): Promise<string> {
 
   try {
     for (let attempt = 0; attempt < 3; attempt += 1) {
-      const result = await ImageManipulator.manipulateAsync(
-        current,
-        [{ resize: { width } }],
-        { compress: quality, format },
-      );
+      const result = await ImageManipulator.manipulateAsync(current, [{ resize: { width } }], {
+        compress: quality,
+        format,
+      });
       current = result.uri;
       quality = Math.max(0.4, quality - 0.15);
       width = Math.round(width * 0.85);
@@ -77,10 +76,7 @@ export async function compressImage(uri: string): Promise<string> {
   }
 }
 
-async function pickAssets(
-  source: 'library' | 'camera',
-  remaining: number,
-): Promise<string[]> {
+async function pickAssets(source: 'library' | 'camera', remaining: number): Promise<string[]> {
   if (remaining <= 0) return [];
 
   if (source === 'camera') {
@@ -90,9 +86,10 @@ async function pickAssets(
       mediaTypes: ['images'],
       quality: 1,
       allowsEditing: false,
+      base64: config.useMockData,
     });
     if (result.canceled || !result.assets?.[0]?.uri) return [];
-    return [result.assets[0].uri];
+    return [toMockSafeUri(result.assets[0])];
   }
 
   const ok = await ensureLibraryPermission();
@@ -102,9 +99,19 @@ async function pickAssets(
     quality: 1,
     allowsMultipleSelection: true,
     selectionLimit: remaining,
+    base64: config.useMockData,
   });
   if (result.canceled || !result.assets?.length) return [];
-  return result.assets.map((a) => a.uri).slice(0, remaining);
+  return result.assets.map(toMockSafeUri).slice(0, remaining);
+}
+
+/** Expo Go can discard picker cache files after navigation. In mock mode, retain
+ * the asset bytes as a data URI so a newly-created listing keeps a usable image. */
+function toMockSafeUri(asset: ImagePicker.ImagePickerAsset): string {
+  if (config.useMockData && asset.base64) {
+    return `data:${asset.mimeType ?? 'image/jpeg'};base64,${asset.base64}`;
+  }
+  return asset.uri;
 }
 
 async function uploadViaApi(localUri: string): Promise<string> {
@@ -135,19 +142,14 @@ export const mediaService = {
   },
 
   /**
-   * Compress then upload one local URI. In mock mode returns a synthetic CDN URL
-   * after compression so the agent form works offline from the API.
+   * Compress then upload one local URI. In mock mode the original local URI is
+   * used as the listing image for the current app session.
    */
-  async uploadOne(localUri: string, agentId: string): Promise<string> {
-    const compressed = await compressImage(localUri);
+  async uploadOne(localUri: string, _agentId: string): Promise<string> {
     if (config.useMockData) {
-      const stamp = Date.now();
-      return delay(
-        `https://cdn.estateease.local/listings/${agentId}/${stamp}-${Math.random()
-          .toString(36)
-          .slice(2, 8)}.webp`,
-      );
+      return delay(localUri);
     }
+    const compressed = await compressImage(localUri);
     return uploadViaApi(compressed);
   },
 

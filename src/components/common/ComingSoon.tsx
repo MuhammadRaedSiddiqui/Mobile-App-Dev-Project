@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { Screen } from '@/components/common';
+import { Screen } from './Screen';
 import { colors, spacing, typography } from '@/theme';
 
 interface ComingSoonProps {

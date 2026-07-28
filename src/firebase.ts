@@ -11,11 +11,13 @@
  * the mock layer, so the app boots cleanly with an empty .env.
  */
 import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
+import { Auth, getAuth } from 'firebase/auth';
 import { Firestore, getFirestore } from 'firebase/firestore';
 import { config, isFirebaseConfigured } from '@/config/env';
 
 let app: FirebaseApp | null = null;
 let firestore: Firestore | null = null;
+let auth: Auth | null = null;
 
 export function getFirebaseApp(): FirebaseApp | null {
   if (!isFirebaseConfigured) return null;
@@ -32,6 +34,15 @@ export function getDb(): Firestore | null {
   if (!initialized) return null;
   firestore = getFirestore(initialized);
   return firestore;
+}
+
+/** Returns Firebase Auth for the configured Firebase application. */
+export function getFirebaseAuth(): Auth | null {
+  if (auth) return auth;
+  const initialized = getFirebaseApp();
+  if (!initialized) return null;
+  auth = getAuth(initialized);
+  return auth;
 }
 
 export { isFirebaseConfigured };

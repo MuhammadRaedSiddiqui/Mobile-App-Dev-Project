@@ -42,7 +42,6 @@ const linking: LinkingOptions<MainStackParamList> = {
       AgentTabs: {
         screens: {
           Dashboard: 'agent',
-          Listings: 'agent/listings',
           Profile: 'agent/profile',
         },
       },

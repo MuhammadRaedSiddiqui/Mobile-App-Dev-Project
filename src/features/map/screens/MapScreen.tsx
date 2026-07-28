@@ -1,10 +1,10 @@
 /**
- * Map discovery — viewport or radius search over Karachi with clustering.
+ * Map discovery — viewport or radius search over Karachi.
+ * Uses the Maps JavaScript API so a no-billing Maps Demo Key can be used.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Marker, Region, PROVIDER_GOOGLE } from 'react-native-maps';
-import ClusteredMapView from 'react-native-map-clustering';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { WebView } from 'react-native-webview';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CompositeNavigationProp } from '@react-navigation/native';
@@ -12,7 +12,6 @@ import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { Screen, ErrorState } from '@/components/common';
 import { colors, spacing, typography } from '@/theme';
 import { listingsService } from '@/services';
-import { formatPkr } from '@/utils/format';
 import type { Listing } from '@/utils/types';
 import type { MainStackParamList, SeekerTabParamList } from '@/navigation/types';
 
@@ -20,26 +19,29 @@ type MapNav = CompositeNavigationProp<
   BottomTabNavigationProp<SeekerTabParamList, 'Map'>,
   NativeStackNavigationProp<MainStackParamList>
 >;
-
 type SearchMode = 'viewport' | 'radius';
 
-const KARACHI: Region = {
-  latitude: 24.86,
-  longitude: 67.01,
-  latitudeDelta: 0.28,
-  longitudeDelta: 0.28,
-};
-
+const KARACHI = { latitude: 24.86, longitude: 67.01, latitudeDelta: 0.28, longitudeDelta: 0.28 };
 const MAP_LIMIT = 200;
 const PAN_DEBOUNCE_MS = 450;
 const RADIUS_OPTIONS = [1, 2, 5] as const;
+const googleMapsKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-function regionToBounds(region: Region) {
-  const minLat = region.latitude - region.latitudeDelta / 2;
-  const maxLat = region.latitude + region.latitudeDelta / 2;
-  const minLng = region.longitude - region.longitudeDelta / 2;
-  const maxLng = region.longitude + region.longitudeDelta / 2;
-  return { minLat, maxLat, minLng, maxLng };
+function regionToBounds(region: typeof KARACHI) {
+  return {
+    minLat: region.latitude - region.latitudeDelta / 2,
+    maxLat: region.latitude + region.latitudeDelta / 2,
+    minLng: region.longitude - region.longitudeDelta / 2,
+    maxLng: region.longitude + region.longitudeDelta / 2,
+  };
+}
+
+function mapHtml(apiKey: string) {
+  return `<!doctype html><html><head><meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no"/><style>html,body,#map{height:100%;margin:0}</style></head><body><div id="map"></div><script>
+let map,markers=[];const send=(m)=>window.ReactNativeWebView.postMessage(JSON.stringify(m));
+window.setListings=(items)=>{if(!map)return;markers.forEach((m)=>m.setMap(null));markers=items.map((item)=>{const marker=new google.maps.Marker({position:{lat:item.lat,lng:item.lng},map,title:item.title});marker.addListener('click',()=>send({type:'listing',listingId:item.listingId}));return marker;});};
+window.initMap=()=>{map=new google.maps.Map(document.getElementById('map'),{center:{lat:24.86,lng:67.01},zoom:11,mapTypeControl:false,streetViewControl:false});map.addListener('idle',()=>{const c=map.getCenter(),b=map.getBounds();if(!c||!b)return;const ne=b.getNorthEast(),sw=b.getSouthWest();send({type:'region',region:{latitude:c.lat(),longitude:c.lng(),latitudeDelta:ne.lat()-sw.lat(),longitudeDelta:ne.lng()-sw.lng()}});});send({type:'ready'});};
+</script><script async src="https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap"></script></body></html>`;
 }
 
 export function MapScreen() {
@@ -50,73 +52,95 @@ export function MapScreen() {
   const [mode, setMode] = useState<SearchMode>('viewport');
   const [radiusKm, setRadiusKm] = useState<(typeof RADIUS_OPTIONS)[number]>(2);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const regionRef = useRef<Region>(KARACHI);
+  const regionRef = useRef(KARACHI);
+  const webViewRef = useRef<WebView>(null);
 
-  const fetchListings = useCallback(async (region: Region, searchMode: SearchMode, radius: number) => {
-    setLoading(true);
-    setError(false);
-    try {
-      const page =
-        searchMode === 'radius'
-          ? await listingsService.getListings({
-              centerLat: region.latitude,
-              centerLng: region.longitude,
-              radiusKm: radius,
-              limit: MAP_LIMIT,
-              fresh: ['fresh', 'aging'],
-            })
-          : await listingsService.getListings({
-              ...regionToBounds(region),
-              limit: MAP_LIMIT,
-              fresh: ['fresh', 'aging'],
-            });
-
-      let items = page.items;
-      if (searchMode === 'viewport') {
-        const bounds = regionToBounds(region);
-        items = items.filter(
-          (l) => l.location.lng >= bounds.minLng && l.location.lng <= bounds.maxLng,
-        );
+  const fetchListings = useCallback(
+    async (region: typeof KARACHI, searchMode: SearchMode, radius: number) => {
+      setLoading(true);
+      setError(false);
+      try {
+        const page =
+          searchMode === 'radius'
+            ? await listingsService.getListings({
+                centerLat: region.latitude,
+                centerLng: region.longitude,
+                radiusKm: radius,
+                limit: MAP_LIMIT,
+                fresh: ['fresh', 'aging'],
+              })
+            : await listingsService.getListings({
+                ...regionToBounds(region),
+                limit: MAP_LIMIT,
+                fresh: ['fresh', 'aging'],
+              });
+        let items = page.items;
+        if (searchMode === 'viewport') {
+          const bounds = regionToBounds(region);
+          items = items.filter(
+            (listing) =>
+              listing.location.lng >= bounds.minLng && listing.location.lng <= bounds.maxLng,
+          );
+        }
+        setListings(items.slice(0, MAP_LIMIT));
+      } catch {
+        setError(true);
+      } finally {
+        setLoading(false);
       }
-      setListings(items.slice(0, MAP_LIMIT));
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     fetchListings(KARACHI, mode, radiusKm);
   }, [fetchListings, mode, radiusKm]);
+  useEffect(
+    () => () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    },
+    [],
+  );
 
-  const onRegionChangeComplete = (region: Region) => {
+  const onRegionChangeComplete = (region: typeof KARACHI) => {
     regionRef.current = region;
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(
-      () => fetchListings(region, mode, radiusKm),
-      PAN_DEBOUNCE_MS,
-    );
+    debounceRef.current = setTimeout(() => fetchListings(region, mode, radiusKm), PAN_DEBOUNCE_MS);
   };
 
-  const provider = Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined;
-
-  const pins = useMemo(
+  const mapListings = useMemo(
     () =>
-      listings.map((l) => (
-        <Marker
-          key={l.listingId}
-          coordinate={{ latitude: l.location.lat, longitude: l.location.lng }}
-          title={l.title}
-          description={`${formatPkr(l.price)} · ${l.freshness.status}`}
-          onCalloutPress={() =>
-            navigation.navigate('ListingDetail', { listingId: l.listingId })
-          }
-          tracksViewChanges={false}
-        />
-      )),
-    [listings, navigation],
+      listings.map((listing) => ({
+        listingId: listing.listingId,
+        title: listing.title,
+        lat: listing.location.lat,
+        lng: listing.location.lng,
+      })),
+    [listings],
   );
+  const updateWebMapPins = useCallback(() => {
+    const payload = JSON.stringify(mapListings).replace(/</g, '\\u003c');
+    webViewRef.current?.injectJavaScript(`window.setListings(${payload}); true;`);
+  }, [mapListings]);
+  useEffect(() => {
+    updateWebMapPins();
+  }, [updateWebMapPins]);
+
+  const onMapMessage = (raw: string) => {
+    try {
+      const message = JSON.parse(raw) as {
+        type: string;
+        listingId?: string;
+        region?: typeof KARACHI;
+      };
+      if (message.type === 'listing' && message.listingId)
+        navigation.navigate('ListingDetail', { listingId: message.listingId });
+      if (message.type === 'region' && message.region) onRegionChangeComplete(message.region);
+      if (message.type === 'ready') updateWebMapPins();
+    } catch {
+      /* Ignore malformed messages from the embedded map. */
+    }
+  };
 
   const subLabel =
     mode === 'radius'
@@ -137,24 +161,19 @@ export function MapScreen() {
         <Text style={styles.title}>Map</Text>
         <Text style={styles.sub}>{subLabel}</Text>
         <View style={styles.modeRow}>
-          <Pressable
-            style={[styles.modeChip, mode === 'viewport' && styles.modeChipActive]}
-            onPress={() => setMode('viewport')}
-          >
-            <Text style={[styles.modeText, mode === 'viewport' && styles.modeTextActive]}>
-              Viewport
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[styles.modeChip, mode === 'radius' && styles.modeChipActive]}
-            onPress={() => setMode('radius')}
-          >
-            <Text style={[styles.modeText, mode === 'radius' && styles.modeTextActive]}>
-              Radius
-            </Text>
-          </Pressable>
+          {(['viewport', 'radius'] as const).map((item) => (
+            <Pressable
+              key={item}
+              style={[styles.modeChip, mode === item && styles.modeChipActive]}
+              onPress={() => setMode(item)}
+            >
+              <Text style={[styles.modeText, mode === item && styles.modeTextActive]}>
+                {item === 'viewport' ? 'Viewport' : 'Radius'}
+              </Text>
+            </Pressable>
+          ))}
         </View>
-        {mode === 'radius' ? (
+        {mode === 'radius' && (
           <View style={styles.radiusRow}>
             {RADIUS_OPTIONS.map((km) => (
               <Pressable
@@ -168,35 +187,31 @@ export function MapScreen() {
               </Pressable>
             ))}
           </View>
-        ) : null}
+        )}
       </View>
-
       {error && !loading ? (
         <View style={styles.errorWrap}>
           <ErrorState onRetry={() => fetchListings(regionRef.current, mode, radiusKm)} />
         </View>
       ) : (
         <View style={styles.mapWrap}>
-          <ClusteredMapView
-            style={styles.map}
-            provider={provider}
-            initialRegion={KARACHI}
-            onRegionChangeComplete={onRegionChangeComplete}
-            showsUserLocation={false}
-            showsMyLocationButton={false}
-            moveOnMarkerPress={false}
-            clusteringEnabled
-            radius={48}
-            extent={512}
-            minPoints={2}
-            clusterColor={colors.textPrimary}
-            clusterTextColor={colors.textInverse}
-            animationEnabled={false}
-            spiralEnabled={false}
-          >
-            {pins}
-          </ClusteredMapView>
-
+          {googleMapsKey ? (
+            <WebView
+              ref={webViewRef}
+              style={styles.map}
+              source={{ html: mapHtml(googleMapsKey) }}
+              javaScriptEnabled
+              domStorageEnabled
+              onLoadEnd={updateWebMapPins}
+              onMessage={(event) => onMapMessage(event.nativeEvent.data)}
+            />
+          ) : (
+            <View style={styles.mapKeyError}>
+              <Text style={styles.mapKeyErrorText}>
+                Add EXPO_PUBLIC_GOOGLE_MAPS_API_KEY to .env to load the map.
+              </Text>
+            </View>
+          )}
           {loading && (
             <View style={styles.loadingChip} pointerEvents="none">
               <ActivityIndicator size="small" color={colors.textInverse} />
@@ -207,11 +222,10 @@ export function MapScreen() {
           )}
         </View>
       )}
-
       <Text style={styles.hint}>
         {mode === 'radius'
           ? 'Pan to move the centre · radius search uses map centre'
-          : 'Pan to search · tap a cluster to expand · tap a pin for details'}
+          : 'Pan to search · tap a pin for details'}
       </Text>
     </Screen>
   );
@@ -249,7 +263,9 @@ const styles = StyleSheet.create({
   modeTextActive: { color: colors.textInverse },
   errorWrap: { flex: 1, justifyContent: 'center' },
   mapWrap: { flex: 1, backgroundColor: colors.surfaceMuted },
-  map: { ...StyleSheet.absoluteFill },
+  map: { flex: 1 },
+  mapKeyError: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.lg },
+  mapKeyErrorText: { ...typography.body, color: colors.textSecondary, textAlign: 'center' },
   loadingChip: {
     position: 'absolute',
     top: spacing.lg,

@@ -13,6 +13,7 @@ import agentRoutes from '@/routes/agent.routes';
 import demoRoutes from '@/routes/demo.routes';
 import agentsRoutes from '@/routes/agents.routes';
 import notificationsRoutes from '@/routes/notifications.routes';
+import messagesRoutes from '@/routes/messages.routes';
 
 /** Build the Express app. Exported (without listening) so tests can mount it. */
 export function createApp(): Express {
@@ -37,6 +38,7 @@ export function createApp(): Express {
   v1.use('/demo', demoRoutes); // mock-only reset helper
   v1.use('/agents', agentsRoutes);
   v1.use('/notifications', notificationsRoutes);
+  v1.use('/messages', messagesRoutes);
   app.use('/v1', v1);
 
   app.use(notFoundHandler);

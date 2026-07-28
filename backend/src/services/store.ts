@@ -172,6 +172,110 @@ const listings: StoredListing[] = SEEDS.map((s) => ({
 // favorites: uid -> set of listingIds
 const favorites = new Map<string, Set<string>>([['seeker-ayesha', new Set()]]);
 
+// ---- Messages / Inquiries ----
+
+export interface MessageRecord {
+  id: string;
+  threadId: string;
+  listingId: string;
+  fromUid: string;
+  toUid: string;
+  text: string;
+  createdAt: string;
+  readAt?: string;
+}
+
+export interface MessageThreadSummary {
+  threadId: string;
+  listingId: string;
+  listingTitle: string;
+  otherPartyUid: string;
+  otherPartyName: string;
+  lastMessage: string;
+  lastMessageAt: string;
+  unreadCount: number;
+}
+
+const messages = new Map<string, MessageRecord[]>();
+let messageCounter = 1;
+
+function buildThreadId(listingId: string, seekerUid: string, agentUid: string): string {
+  return `thread-${listingId}-${seekerUid}-${agentUid}`;
+}
+
+export function createMessage(input: {
+  listingId: string;
+  fromUid: string;
+  toUid: string;
+  text: string;
+}): MessageRecord {
+  const listing = rawListing(input.listingId);
+  const seekerUid = findUserByUid(input.fromUid)?.role === 'seeker' ? input.fromUid : input.toUid;
+  const agentUid = input.fromUid === seekerUid ? input.toUid : input.fromUid;
+  const threadId = buildThreadId(input.listingId, seekerUid, agentUid);
+
+  const record: MessageRecord = {
+    id: `msg-${messageCounter++}`,
+    threadId,
+    listingId: input.listingId,
+    fromUid: input.fromUid,
+    toUid: input.toUid,
+    text: input.text,
+    createdAt: new Date().toISOString(),
+  };
+
+  const thread = messages.get(threadId) ?? [];
+  thread.push(record);
+  messages.set(threadId, thread);
+  return record;
+}
+
+export function listMessageThreads(uid: string): MessageThreadSummary[] {
+  const result: MessageThreadSummary[] = [];
+  for (const [threadId, msgs] of messages.entries()) {
+    const involved = msgs.some((m) => m.fromUid === uid || m.toUid === uid);
+    if (!involved) continue;
+    const last = msgs[msgs.length - 1];
+    const otherUid = last.fromUid === uid ? last.toUid : last.fromUid;
+    const otherUser = findUserByUid(otherUid);
+    const listing = rawListing(last.listingId);
+    const unread = msgs.filter((m) => m.toUid === uid && !m.readAt).length;
+    result.push({
+      threadId,
+      listingId: last.listingId,
+      listingTitle: listing?.title ?? 'Unknown listing',
+      otherPartyUid: otherUid,
+      otherPartyName: otherUser?.displayName ?? 'Unknown',
+      lastMessage: last.text,
+      lastMessageAt: last.createdAt,
+      unreadCount: unread,
+    });
+  }
+  return result.sort(
+    (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime(),
+  );
+}
+
+export function getMessageThread(threadId: string, uid: string): MessageRecord[] | null {
+  const msgs = messages.get(threadId);
+  if (!msgs) return null;
+  const involved = msgs.some((m) => m.fromUid === uid || m.toUid === uid);
+  if (!involved) return null;
+  return [...msgs];
+}
+
+export function markThreadRead(threadId: string, uid: string): boolean {
+  const msgs = messages.get(threadId);
+  if (!msgs) return false;
+  const involved = msgs.some((m) => m.fromUid === uid || m.toUid === uid);
+  if (!involved) return false;
+  const now = new Date().toISOString();
+  for (const m of msgs) {
+    if (m.toUid === uid && !m.readAt) m.readAt = now;
+  }
+  return true;
+}
+
 /** Push tokens and saved-search notification state (Phase 8). */
 const pushTokens = new Map<string, { token: string; platform: string; updatedAt: string }>();
 const notificationPrefs = new Map<string, NotificationPreferences>();

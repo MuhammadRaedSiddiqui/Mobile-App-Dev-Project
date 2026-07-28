@@ -6,6 +6,8 @@ import { ProfileEditScreen } from '@/features/auth/screens/ProfileEditScreen';
 import { NotificationSettingsScreen } from '@/features/auth/screens/NotificationSettingsScreen';
 import { SavedSearchesScreen } from '@/features/search/screens/SavedSearchesScreen';
 import { AgentProfileScreen } from '@/features/agent/screens/AgentProfileScreen';
+import { MessagesScreen } from '@/features/messages/screens/MessagesScreen';
+import { MessageThreadScreen } from '@/features/messages/screens/MessageThreadScreen';
 import { NotFoundScreen } from '@/features/auth/screens/NotFoundScreen';
 import { useAppSelector } from '@/store/hooks';
 import { SeekerTabs } from './SeekerTabs';
@@ -62,6 +64,16 @@ export function MainNavigator() {
         name="SavedSearches"
         component={SavedSearchesScreen}
         options={{ headerShown: true, title: 'Saved searches' }}
+      />
+      <Stack.Screen
+        name="Messages"
+        component={MessagesScreen}
+        options={{ headerShown: true, title: 'Messages' }}
+      />
+      <Stack.Screen
+        name="MessageThread"
+        component={MessageThreadScreen}
+        options={{ headerShown: true, title: 'Conversation' }}
       />
       <Stack.Screen name="NotFound" component={NotFoundScreen} />
     </Stack.Navigator>

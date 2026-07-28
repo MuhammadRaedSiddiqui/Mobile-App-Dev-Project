@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Step 4 of 4: Add Photos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#fbf9f8",
+                    "on-error": "#ffffff",
+                    "faint": "#f7f7f7",
+                    "tertiary-container": "#008558",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#e2dfde",
+                    "inverse-on-surface": "#f2f0f0",
+                    "secondary": "#5f5e5e",
+                    "on-surface": "#1b1c1c",
+                    "tertiary-fixed-dim": "#62dca3",
+                    "on-secondary-fixed": "#1b1c1c",
+                    "primary-container": "#e21e4a",
+                    "outline": "#906f70",
+                    "primary-fixed-dim": "#ffb2b6",
+                    "on-error-container": "#93000a",
+                    "on-background": "#1b1c1c",
+                    "on-secondary-container": "#636262",
+                    "primary-fixed": "#ffdada",
+                    "surface-variant": "#e4e2e2",
+                    "tertiary": "#006a45",
+                    "on-secondary-fixed-variant": "#474746",
+                    "on-tertiary-fixed-variant": "#005234",
+                    "tertiary-fixed": "#80f9bd",
+                    "on-primary": "#ffffff",
+                    "grey-500": "#c1c1c1",
+                    "surface-container-lowest": "#ffffff",
+                    "primary": "#ba0036",
+                    "outline-variant": "#e5bdbe",
+                    "secondary-fixed": "#e5e2e1",
+                    "surface-bright": "#fbf9f8",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "surface-dim": "#dbdad9",
+                    "surface-container-high": "#e9e8e7",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "rausch-600": "#e00b41",
+                    "deco": "#dddddd",
+                    "background": "#fbf9f8",
+                    "surface-container-low": "#f5f3f3",
+                    "on-primary-fixed": "#40000d",
+                    "surface-container": "#efeded",
+                    "white": "#ffffff",
+                    "on-primary-container": "#fffbff",
+                    "inverse-surface": "#303031",
+                    "surface-container-highest": "#e4e2e2",
+                    "on-tertiary-container": "#f6fff6",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#be0038",
+                    "on-tertiary-fixed": "#002113",
+                    "inverse-primary": "#ffb2b6",
+                    "on-primary-fixed-variant": "#920029",
+                    "bebe": "#ebebeb",
+                    "on-surface-variant": "#5c3f41"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "12px",
+                    "xl": "24px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "section-gap": "48px",
+                    "page-margin": "40px",
+                    "lg": "16px",
+                    "unit": "4px"
+            },
+            "fontFamily": {
+                    "body": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "heading-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "ui-label": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "subheading": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "heading-sm": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "caption": [
+                            "Plus Jakarta Sans"
+                    ]
+            },
+            "fontSize": {
+                    "body": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.43",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "heading-lg": [
+                            "28px",
+                            {
+                                    "lineHeight": "1.43",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "ui-label": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.25",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "subheading": [
+                            "20px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.009em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "heading-sm": [
+                            "22px",
+                            {
+                                    "lineHeight": "1.18",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "caption": [
+                            "11px",
+                            {
+                                    "lineHeight": "1.18",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full h-20 bg-white dark:bg-on-surface border-b border-bebe dark:border-outline-variant z-40">
+<div class="flex items-center justify-between px-page-margin max-w-[1440px] mx-auto h-full">
+<div class="flex items-center cursor-pointer active:scale-95 transition-transform hover:opacity-80">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim mr-sm" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</div>
+<h1 class="font-heading-sm text-heading-sm font-bold text-on-surface dark:text-inverse-on-surface">Step 4 of 4</h1>
+<div class="w-[24px]"></div> <!-- Spacer for centering -->
+</div>
+</header>
+<!-- Main Content -->
+<main class="max-w-[1440px] mx-auto px-page-margin pt-32">
+<section class="max-w-3xl mx-auto">
+<div class="mb-xl">
+<h2 class="font-heading-lg text-heading-lg text-on-surface mb-sm">Add photos (up to 10)</h2>
+<p class="font-body text-body text-secondary">Showcase your space with high-quality images. The first photo will be your cover.</p>
+</div>
+<!-- Photo Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Add Photo Placeholder -->
+<button class="aspect-square flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-grey-500 bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors text-4xl mb-sm" style="font-variation-settings: 'FILL' 0;">add</span>
+<span class="font-ui-label text-ui-label text-secondary group-hover:text-primary transition-colors">Add photo</span>
+</button>
+<!-- Photo Mock 1 -->
+<div class="aspect-square rounded-xl overflow-hidden relative group">
+<img alt="Living room thumbnail" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A brightly lit, modern living room interior. The room features a plush white sofa, a light wood coffee table, and large windows allowing natural sunlight to pour in. The aesthetic is clean, minimalist, and welcoming, fitting perfectly with a modern light-mode design system. The space exudes comfort and high-end hospitality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpOjrgZqkr1jd1_VrG3biGdJ05qQyt3kGrdRYz8l07xWfzAIfryZe9aEylbYcBKYXxjVG2Sa1NJ_PdI6jHTMijwljhgNbvdJW51hLV2PPOon6p41WaPqunGq4Ws4PdH9reAj7QEoYsqHJVkyAhUfPKRIoB8n9K1HGfufUlSPrWOfQy03xY1Mm0jMKUleIUj-e1tnaZey6WIGC091eCLLdeQvDcR3uvWVH7zQ6Vp4h5f244Z9GL80g1QKK_qOHZsKqWnruf58cOUrbO"/>
+<div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-start justify-end p-sm">
+<button class="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white text-secondary hover:text-error transition-colors">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">close</span>
+</button>
+</div>
+</div>
+<!-- Photo Mock 2 -->
+<div class="aspect-square rounded-xl overflow-hidden relative group">
+<img alt="Kitchen thumbnail" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A pristine, modern kitchen with white marble countertops and sleek, handleless cabinetry. Stainless steel appliances reflect the soft, natural light coming from a nearby window. The scene is styled with minimal clutter, perhaps a bowl of fresh fruit, adhering to a sophisticated, minimalist architectural photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOoKgZ6OfqiFzMheRpbBbIMOKJ7X6Fd2pHoTZnrruBOALo25dnXE2n0KtlzXf-WfHuUYTyUlUQoFXkkS1RdDjNyx_RmxKCPLPKnpQKxXqslP5ApyDeOghL_FzgSEXs2ojXyvn_zalCklQdgvGAkukgphb9VuuuY_bAQFp0Ep7S6FRL_rdbI5EqByYUYRwyic25IbTVvLhj0c3B-0dI-9mE89LFheAsEOZRSDjTUvvDsKQf-63igC4pUGgxOJgdEzKIdQbGJ1pVOKNB"/>
+<div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-start justify-end p-sm">
+<button class="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white text-secondary hover:text-error transition-colors">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">close</span>
+</button>
+</div>
+</div>
+<!-- Empty State Cells -->
+<div class="aspect-square rounded-xl bg-surface-container border border-bebe flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary opacity-30 text-3xl" style="font-variation-settings: 'FILL' 0;">image</span>
+</div>
+<div class="aspect-square rounded-xl bg-surface-container border border-bebe flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary opacity-30 text-3xl" style="font-variation-settings: 'FILL' 0;">image</span>
+</div>
+<div class="aspect-square rounded-xl bg-surface-container border border-bebe flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary opacity-30 text-3xl" style="font-variation-settings: 'FILL' 0;">image</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Fixed Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 w-full bg-white dark:bg-on-surface border-t border-bebe dark:border-outline-variant shadow-sm z-50">
+<div class="max-w-[1440px] mx-auto px-page-margin py-lg flex justify-between items-center">
+<button class="font-ui-label text-ui-label text-secondary hover:text-on-surface transition-colors">
+                Back
+            </button>
+<button class="bg-rausch-600 text-on-primary rounded-full px-xl py-md font-ui-label text-ui-label hover:opacity-90 active:scale-[0.99] transition-all duration-200">
+                Publish listing
+            </button>
+</div>
+</div>
+</body></html>

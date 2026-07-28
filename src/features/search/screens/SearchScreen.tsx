@@ -35,7 +35,7 @@ import {
   type PersistedSearchFilters,
 } from '@/utils/searchFilters';
 import { LIVABILITY_LABELS, LIVABILITY_TAG_IDS } from '@/utils/livabilityTags';
-import { notificationsService } from '@/services';
+import { listingsService, notificationsService } from '@/services';
 
 type SearchNav = CompositeNavigationProp<
   BottomTabNavigationProp<SeekerTabParamList, 'Search'>,
@@ -107,6 +107,7 @@ export function SearchScreen() {
   const [filtersHydrated, setFiltersHydrated] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [showRecent, setShowRecent] = useState(false);
+  const [areaSuggestions, setAreaSuggestions] = useState<string[]>([]);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const filterDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -179,6 +180,10 @@ export function SearchScreen() {
     }, DEBOUNCE_MS);
   }, []);
 
+  useEffect(() => {
+    setAreaSuggestions(listingsService.getAreaSuggestions(inputValue));
+  }, [inputValue]);
+
   const commitSearch = useCallback(
     async (term: string) => {
       const trimmed = term.trim();
@@ -224,8 +229,10 @@ export function SearchScreen() {
     const q: Parameters<typeof useListings>[0] = {};
     if (committedQ) q.q = committedQ;
     if (committedCity.trim()) q.city = committedCity.trim();
-    if (committedMinPrice && !isNaN(Number(committedMinPrice))) q.minPrice = Number(committedMinPrice);
-    if (committedMaxPrice && !isNaN(Number(committedMaxPrice))) q.maxPrice = Number(committedMaxPrice);
+    if (committedMinPrice && !isNaN(Number(committedMinPrice)))
+      q.minPrice = Number(committedMinPrice);
+    if (committedMaxPrice && !isNaN(Number(committedMaxPrice)))
+      q.maxPrice = Number(committedMaxPrice);
     if (committedMinArea && !isNaN(Number(committedMinArea))) q.minArea = Number(committedMinArea);
     if (committedMaxArea && !isNaN(Number(committedMaxArea))) q.maxArea = Number(committedMaxArea);
     if (tags.length) q.tags = tags;
@@ -316,8 +323,10 @@ export function SearchScreen() {
     const q: Parameters<typeof notificationsService.saveSearch>[0]['query'] = {};
     if (committedQ) q.q = committedQ;
     if (committedCity.trim()) q.city = committedCity.trim();
-    if (committedMinPrice && !isNaN(Number(committedMinPrice))) q.minPrice = Number(committedMinPrice);
-    if (committedMaxPrice && !isNaN(Number(committedMaxPrice))) q.maxPrice = Number(committedMaxPrice);
+    if (committedMinPrice && !isNaN(Number(committedMinPrice)))
+      q.minPrice = Number(committedMinPrice);
+    if (committedMaxPrice && !isNaN(Number(committedMaxPrice)))
+      q.maxPrice = Number(committedMaxPrice);
     if (committedMinArea && !isNaN(Number(committedMinArea))) q.minArea = Number(committedMinArea);
     if (committedMaxArea && !isNaN(Number(committedMaxArea))) q.maxArea = Number(committedMaxArea);
     if (tags.length) q.tags = tags;
@@ -352,7 +361,10 @@ export function SearchScreen() {
         query: buildSavedSearchQuery(),
         notifyOnNewListings: true,
       });
-      Alert.alert('Search saved', 'Turn on alerts in Profile → Notifications if you want push updates.');
+      Alert.alert(
+        'Search saved',
+        'Turn on alerts in Profile → Notifications if you want push updates.',
+      );
     } catch {
       Alert.alert('Couldn’t save', 'Please try again in a moment.');
     }
@@ -390,7 +402,7 @@ export function SearchScreen() {
         </Pressable>
       </View>
 
-      {showRecent && recentSearches.length > 0 && (
+      {showRecent && !inputValue.trim() && recentSearches.length > 0 && (
         <View style={styles.recentBox}>
           <View style={styles.recentHeader}>
             <Text style={styles.recentLabel}>Recent</Text>
@@ -412,6 +424,17 @@ export function SearchScreen() {
                 <Text style={styles.recentRemoveText}>✕</Text>
               </Pressable>
             </View>
+          ))}
+        </View>
+      )}
+
+      {showRecent && inputValue.trim() && areaSuggestions.length > 0 && (
+        <View style={styles.suggestionBox}>
+          <Text style={styles.suggestionLabel}>Areas in Karachi</Text>
+          {areaSuggestions.map((area) => (
+            <Pressable key={area} style={styles.suggestionItem} onPress={() => commitSearch(area)}>
+              <Text style={styles.suggestionItemText}>{area}</Text>
+            </Pressable>
           ))}
         </View>
       )}
@@ -463,7 +486,9 @@ export function SearchScreen() {
                   style={[styles.chip, active && styles.chipActive]}
                   onPress={() => setBedrooms(opt.id)}
                 >
-                  <Text style={[styles.chipText, active && styles.chipTextActive]}>{opt.label}</Text>
+                  <Text style={[styles.chipText, active && styles.chipTextActive]}>
+                    {opt.label}
+                  </Text>
                 </Pressable>
               );
             })}
@@ -660,7 +685,12 @@ const styles = StyleSheet.create({
   listContent: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: 80 },
   footer: { paddingVertical: spacing.xl },
 
-  searchRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
   input: {
     flex: 1,
     ...typography.body,
@@ -706,6 +736,23 @@ const styles = StyleSheet.create({
   recentItemText: { ...typography.body, color: colors.textPrimary },
   recentRemove: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
   recentRemoveText: { ...typography.caption, color: colors.textSecondary },
+  suggestionBox: {
+    backgroundColor: colors.surface,
+    borderRadius: radii.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: spacing.sm,
+    overflow: 'hidden',
+  },
+  suggestionLabel: {
+    ...typography.caption,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+  },
+  suggestionItem: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
+  suggestionItemText: { ...typography.body, color: colors.textPrimary },
 
   filterPanel: {
     backgroundColor: colors.surface,

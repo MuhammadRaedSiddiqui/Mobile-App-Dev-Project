@@ -12,7 +12,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, ErrorState, Skeleton, Badge } from '@/components/common';
 import { CostBreakdown, FreshnessBadge } from '@/components/listing';
@@ -357,7 +357,19 @@ export function ListingDetailScreen({ route, navigation }: Props) {
 
       {!isOwner && user?.role === 'seeker' ? (
         <View style={styles.contactBar}>
-          <Button label="Contact agent" fullWidth onPress={() => undefined} />
+          <Button
+            label="Message agent"
+            fullWidth
+            onPress={() =>
+              navigation.navigate('MessageThread', {
+                threadId: `thread-${listingId}-${user.uid}-${agent.uid}`,
+                listingId,
+                agentId: agent.uid,
+                listingTitle: listing.title,
+                agentName: agent.displayName,
+              })
+            }
+          />
         </View>
       ) : null}
     </SafeAreaView>

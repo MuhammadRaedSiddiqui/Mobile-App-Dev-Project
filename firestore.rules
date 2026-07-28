@@ -43,7 +43,17 @@ service cloud.firestore {
     // Users — a user may read only their own profile document.
     match /users/{uid} {
       allow read: if isOwner(uid);
-      allow write: if false; // profile writes go through Express
+      // Firebase Auth profile bootstrap. A signed-in user can create and update
+      // only their own profile; identity fields and role cannot be changed later.
+      allow create: if isOwner(uid)
+        && request.resource.data.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.role in ['seeker', 'agent'];
+      allow update: if isOwner(uid)
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.role == resource.data.role;
+      allow delete: if false;
     }
 
     // Favorites — a user may read only their own favorites.

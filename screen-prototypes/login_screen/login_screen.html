@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Estate Ease - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#e5e2e1",
+                    "surface-tint": "#be0038",
+                    "on-surface-variant": "#5c3f41",
+                    "on-primary-fixed": "#40000d",
+                    "surface": "#fbf9f8",
+                    "outline": "#906f70",
+                    "surface-container": "#efeded",
+                    "outline-variant": "#e5bdbe",
+                    "on-background": "#1b1c1c",
+                    "on-surface": "#1b1c1c",
+                    "on-tertiary-fixed": "#002113",
+                    "primary-fixed-dim": "#ffb2b6",
+                    "tertiary-fixed": "#80f9bd",
+                    "surface-container-high": "#e9e8e7",
+                    "inverse-on-surface": "#f2f0f0",
+                    "primary": "#ba0036",
+                    "on-error": "#ffffff",
+                    "grey-500": "#c1c1c1",
+                    "surface-bright": "#fbf9f8",
+                    "inverse-surface": "#303031",
+                    "on-secondary-container": "#636262",
+                    "error": "#ba1a1a",
+                    "rausch-600": "#e00b41",
+                    "on-error-container": "#93000a",
+                    "inverse-primary": "#ffb2b6",
+                    "tertiary-fixed-dim": "#62dca3",
+                    "tertiary-container": "#008558",
+                    "primary-fixed": "#ffdada",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#005234",
+                    "on-primary": "#ffffff",
+                    "bebe": "#ebebeb",
+                    "deco": "#dddddd",
+                    "faint": "#f7f7f7",
+                    "surface-variant": "#e4e2e2",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "surface-container-low": "#f5f3f3",
+                    "on-secondary-fixed-variant": "#474746",
+                    "tertiary": "#006a45",
+                    "background": "#fbf9f8",
+                    "surface-dim": "#dbdad9",
+                    "on-primary-container": "#fffbff",
+                    "primary-container": "#e21e4a",
+                    "on-primary-fixed-variant": "#920029",
+                    "error-container": "#ffdad6",
+                    "secondary": "#5f5e5e",
+                    "on-secondary-fixed": "#1b1c1c",
+                    "on-tertiary-container": "#f6fff6",
+                    "white": "#ffffff",
+                    "secondary-container": "#e2dfde",
+                    "surface-container-highest": "#e4e2e2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "section-gap": "48px",
+                    "lg": "16px",
+                    "xl": "24px",
+                    "page-margin": "40px",
+                    "sm": "8px",
+                    "unit": "4px",
+                    "md": "12px"
+            },
+            "fontFamily": {
+                    "heading-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "caption": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "subheading": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "heading-sm": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "ui-label": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body": [
+                            "Plus Jakarta Sans"
+                    ]
+            },
+            "fontSize": {
+                    "heading-lg": [
+                            "28px",
+                            {
+                                    "lineHeight": "1.43",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "caption": [
+                            "11px",
+                            {
+                                    "lineHeight": "1.18",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "subheading": [
+                            "20px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.009em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "heading-sm": [
+                            "22px",
+                            {
+                                    "lineHeight": "1.18",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "ui-label": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.25",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.43",
+                                    "letterSpacing": "normal",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col font-body">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full flex justify-between items-center px-page-margin h-20 bg-surface z-50">
+<button class="text-secondary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center p-sm -ml-sm">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="font-heading-sm text-heading-sm text-primary tracking-tight">Estate Ease</div>
+<div class="w-10"></div> <!-- Spacer to center wordmark -->
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col justify-center items-center px-page-margin pt-20 pb-section-gap max-w-md mx-auto w-full">
+<div class="w-full space-y-xl">
+<div class="space-y-sm text-center md:text-left pt-section-gap">
+<h1 class="font-heading-lg text-heading-lg text-on-surface">Welcome back.</h1>
+</div>
+<form class="space-y-lg w-full">
+<!-- Email Field -->
+<div class="space-y-xs">
+<label class="font-ui-label text-ui-label text-on-surface block" for="email">Email</label>
+<input class="w-full rounded-lg border-bebe bg-white px-lg py-md font-body text-body text-on-surface placeholder-grey-500 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none" id="email" placeholder="name@example.com" required="" type="email"/>
+</div>
+<!-- Password Field -->
+<div class="space-y-xs">
+<div class="flex justify-between items-center">
+<label class="font-ui-label text-ui-label text-on-surface block" for="password">Password</label>
+</div>
+<div class="relative">
+<input class="w-full rounded-lg border-bebe bg-white px-lg py-md font-body text-body text-on-surface placeholder-grey-500 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none pr-12" id="password" placeholder="Password" required="" type="password"/>
+<button class="absolute inset-y-0 right-0 flex items-center px-md text-secondary hover:text-on-surface transition-colors" id="togglePassword" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+<div class="flex justify-end pt-sm">
+<a class="font-ui-label text-ui-label text-on-surface hover:opacity-80 transition-opacity" href="#">Forgot password?</a>
+</div>
+</div>
+<!-- Log In Button -->
+<button class="w-full bg-rausch-600 hover:opacity-90 active:scale-95 transition-all text-white font-ui-label text-ui-label py-md rounded-full mt-xl flex items-center justify-center h-12 shadow-sm" type="submit">
+                    Log in
+                </button>
+</form>
+<!-- Divider -->
+<div class="flex items-center justify-center space-x-md py-md">
+<div class="h-px bg-bebe flex-grow"></div>
+<span class="font-body text-body text-secondary">or</span>
+<div class="h-px bg-bebe flex-grow"></div>
+</div>
+<!-- Social Login -->
+<button class="w-full border border-on-surface hover:bg-faint active:scale-95 transition-all text-on-surface font-ui-label text-ui-label py-md rounded-lg flex items-center justify-center space-x-md h-12" type="button">
+<!-- Using a generic google icon replacement since actual SVG isn't provided, keeping it clean -->
+<span class="material-symbols-outlined" data-icon="g_mobiledata">g_mobiledata</span>
+<span>Continue with Google</span>
+</button>
+</div>
+</main>
+<!-- Footer Action -->
+<footer class="mt-auto py-xl text-center w-full pb-xl">
+<p class="font-body text-body text-on-surface">
+            Don't have an account? <a class="text-rausch-600 font-ui-label text-ui-label hover:opacity-80 transition-opacity" href="#">Sign up</a>
+</p>
+</footer>
+<script>
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('span');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.textContent = 'visibility_off';
+                icon.setAttribute('data-icon', 'visibility_off');
+            } else {
+                passwordInput.type = 'password';
+                icon.textContent = 'visibility';
+                icon.setAttribute('data-icon', 'visibility');
+            }
+        });
+    </script>
+</body></html>

@@ -11,21 +11,20 @@ type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
 export function LoginScreen({ navigation }: Props) {
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((s) => s.auth);
-
+  const { loading, error } = useAppSelector((state) => state.auth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [touched, setTouched] = useState(false);
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       dispatch(clearError());
-    };
-  }, [dispatch]);
+    },
+    [dispatch],
+  );
 
   const emailInvalid = touched && !/^\S+@\S+\.\S+$/.test(email);
   const passwordInvalid = touched && password.length < 6;
-
   const onSubmit = () => {
     setTouched(true);
     if (emailInvalid || passwordInvalid || !email || !password) return;
@@ -39,7 +38,6 @@ export function LoginScreen({ navigation }: Props) {
           <Text style={styles.brand}>Estate Ease</Text>
           <Text style={styles.tagline}>Rentals you can actually trust.</Text>
         </View>
-
         <View style={styles.form}>
           <Input
             label="Email"
@@ -55,13 +53,12 @@ export function LoginScreen({ navigation }: Props) {
             label="Password"
             placeholder="••••••••"
             secureTextEntry
+            autoComplete="password"
             value={password}
             onChangeText={setPassword}
             error={passwordInvalid ? 'Password must be at least 6 characters.' : undefined}
           />
-
           {error ? <Text style={styles.error}>{error}</Text> : null}
-
           <Button
             label="Log in"
             onPress={onSubmit}
@@ -69,18 +66,11 @@ export function LoginScreen({ navigation }: Props) {
             fullWidth
             style={styles.cta}
           />
-
           <View style={styles.footer}>
             <Text style={styles.footerText}>New to Estate Ease? </Text>
             <Pressable onPress={() => navigation.navigate('Register')} hitSlop={8}>
               <Text style={styles.link}>Create an account</Text>
             </Pressable>
-          </View>
-
-          <View style={styles.demo}>
-            <Text style={styles.demoText}>Demo — seeker: ayesha@example.com</Text>
-            <Text style={styles.demoText}>Demo — agent: danish@example.com</Text>
-            <Text style={styles.demoText}>Password for both: password123</Text>
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -98,14 +88,4 @@ const styles = StyleSheet.create({
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: spacing.md },
   footerText: { ...typography.body, color: colors.textSecondary },
   link: { ...typography.bodyStrong, color: colors.primary },
-  demo: {
-    marginTop: spacing.xl,
-    padding: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: colors.border,
-    gap: 2,
-  },
-  demoText: { ...typography.caption, color: colors.textSecondary },
 });

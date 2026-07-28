@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Favorites - Estate Ease</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#920029",
+                        "tertiary": "#006a45",
+                        "on-tertiary-fixed-variant": "#005234",
+                        "tertiary-fixed": "#80f9bd",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "deco": "#dddddd",
+                        "secondary-container": "#e2dfde",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e9e8e7",
+                        "tertiary-container": "#008558",
+                        "outline-variant": "#e5bdbe",
+                        "primary-fixed": "#ffdada",
+                        "faint": "#f7f7f7",
+                        "on-surface-variant": "#5c3f41",
+                        "primary": "#ba0036",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#fffbff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#f6fff6",
+                        "inverse-on-surface": "#f2f0f0",
+                        "secondary": "#5f5e5e",
+                        "on-tertiary-fixed": "#002113",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#303031",
+                        "white": "#ffffff",
+                        "surface-container": "#efeded",
+                        "on-surface": "#1b1c1c",
+                        "grey-500": "#c1c1c1",
+                        "bebe": "#ebebeb",
+                        "primary-container": "#e21e4a",
+                        "surface-variant": "#e4e2e2",
+                        "surface-dim": "#dbdad9",
+                        "on-secondary-container": "#636262",
+                        "outline": "#906f70",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-background": "#1b1c1c",
+                        "tertiary-fixed-dim": "#62dca3",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "on-primary-fixed": "#40000d",
+                        "surface-container-low": "#f5f3f3",
+                        "background": "#fbf9f8",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "primary-fixed-dim": "#ffb2b6",
+                        "rausch-600": "#e00b41",
+                        "surface-tint": "#be0038",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-container-highest": "#e4e2e2",
+                        "surface-bright": "#fbf9f8",
+                        "surface": "#fbf9f8",
+                        "inverse-primary": "#ffb2b6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "24px",
+                        "unit": "4px",
+                        "lg": "16px",
+                        "section-gap": "48px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "page-margin": "40px",
+                        "md": "12px"
+                    },
+                    "fontFamily": {
+                        "heading-sm": ["Plus Jakarta Sans"],
+                        "heading-lg": ["Plus Jakarta Sans"],
+                        "subheading": ["Plus Jakarta Sans"],
+                        "ui-label": ["Plus Jakarta Sans"],
+                        "caption": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "heading-sm": ["22px", { "lineHeight": "1.18", "letterSpacing": "-0.02em", "fontWeight": "500" }],
+                        "heading-lg": ["28px", { "lineHeight": "1.43", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "subheading": ["20px", { "lineHeight": "1.2", "letterSpacing": "-0.009em", "fontWeight": "600" }],
+                        "ui-label": ["16px", { "lineHeight": "1.25", "letterSpacing": "normal", "fontWeight": "500" }],
+                        "caption": ["11px", { "lineHeight": "1.18", "letterSpacing": "normal", "fontWeight": "600" }],
+                        "body": ["14px", { "lineHeight": "1.43", "letterSpacing": "normal", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Hide scrollbar for clean horizontal scrolling */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-[90px] pt-20 flex flex-col font-body">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full h-20 bg-white dark:bg-surface-container-lowest z-40">
+<div class="flex items-center justify-between px-page-margin w-full max-w-[1440px] mx-auto h-full border-b border-bebe dark:border-on-surface-variant transition-colors duration-200">
+<button class="text-primary hover:bg-faint dark:hover:bg-surface-variant p-2 rounded-full transition-colors duration-200 flex items-center justify-center">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-heading-sm text-heading-sm font-bold text-primary dark:text-primary-container">Favorites</h1>
+<button class="text-primary hover:bg-faint dark:hover:bg-surface-variant p-2 rounded-full transition-colors duration-200 flex items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Content: Favorites List -->
+<main class="flex-grow w-full max-w-[1440px] mx-auto px-4 md:px-page-margin py-section-gap flex flex-col gap-6">
+<!-- Active Listing Card 1 -->
+<div class="group cursor-pointer relative bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col sm:flex-row gap-4 p-4 border border-bebe">
+<div class="relative w-full sm:w-[200px] aspect-square flex-shrink-0 rounded-[12px] overflow-hidden">
+<img alt="Property Image" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A brightly lit, modern apartment living room with expansive floor-to-ceiling windows showing a cityscape. The room is styled minimally with a sleek white sofa, light oak flooring, and subtle coral-red decorative accents. The photograph-first style is clean, airy, and high-end, fitting a premium rental listing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDF8RtI128O0a3QVs9Mv8i245IWPUNM_seXBDpJWLQfckwp7uBMk_SWVfZsdEZ97z-7nt-vaDUOCkajCvc0yZ184FMFLx-sninWvUNjkhVOiJuX5KFU7nLAqeSAmUzbfIDsXPu8faqJc5UnqBtDPxD3cNkkSjvz300uVHyUeX8yfxOvnsAd-Z0sz3gO9W-1UsqfvnxKyhrEr6JhF36sgbCiE_F-Ko5QyIcOZfWRVdkms3SsGhsoNpDq06rXk94FAoBfDlyGmqT5AbJa"/>
+<button class="absolute top-3 right-3 p-1.5 bg-white/80 backdrop-blur-sm rounded-full text-primary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined fill text-[20px]">favorite</span>
+</button>
+</div>
+<div class="flex flex-col justify-between flex-grow py-1">
+<div>
+<div class="flex items-center justify-between mb-1">
+<span class="bg-surface-container-low text-on-surface text-caption font-caption px-2 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> Verified
+                        </span>
+<span class="text-secondary text-caption font-caption">Added 2d ago</span>
+</div>
+<h3 class="font-ui-label text-ui-label text-on-surface mb-1">Modern Loft in Downtown</h3>
+<p class="font-body text-body text-secondary">2 Beds • 2 Baths • 1,200 sqft</p>
+</div>
+<div class="mt-4 pt-4 border-t border-bebe">
+<p class="font-ui-label text-ui-label text-on-surface">
+<span class="font-bold">PKR 45,000</span> <span class="text-secondary font-normal">/mo</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Active Listing Card 2 -->
+<div class="group cursor-pointer relative bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden flex flex-col sm:flex-row gap-4 p-4 border border-bebe">
+<div class="relative w-full sm:w-[200px] aspect-square flex-shrink-0 rounded-[12px] overflow-hidden">
+<img alt="Property Image" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A serene, minimalist bedroom bathed in soft natural sunlight. The space features a low-profile wooden bed frame, crisp white linens, and a single vibrant coral-red throw pillow. The walls are a pristine off-white, emphasizing a clean, modern, and hospital architectural style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFpxPuvQ9-eHPBkfJW9wxaEuDUyqDFQcIPazetmaVF71Vgz_-jMoPxjFJj25rauFv_L7Q87hQjql79XzEmnKq95RzOgQHsjgh03hJpJ680xPdmavOgdaXNnMX06Yawlz4BSTRiY8G1LEWCMgFOYK03NUMFDGVUQG3gf8AacEr8YJ0IdpW15dXSOYXCdS3DxM38EHRvi77VUkwPXfU4cFmt_G4BcZfdlR2mEKORNW5ecq12sRtPZ3kq7kquXtSIRYdO6UVsW1ZzsGqK"/>
+<button class="absolute top-3 right-3 p-1.5 bg-white/80 backdrop-blur-sm rounded-full text-primary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined fill text-[20px]">favorite</span>
+</button>
+</div>
+<div class="flex flex-col justify-between flex-grow py-1">
+<div>
+<div class="flex items-center justify-between mb-1">
+<span class="bg-surface-container-low text-on-surface text-caption font-caption px-2 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> Verified
+                        </span>
+<span class="text-secondary text-caption font-caption">Added 1w ago</span>
+</div>
+<h3 class="font-ui-label text-ui-label text-on-surface mb-1">Cozy Studio near University</h3>
+<p class="font-body text-body text-secondary">Studio • 1 Bath • 450 sqft</p>
+</div>
+<div class="mt-4 pt-4 border-t border-bebe">
+<p class="font-ui-label text-ui-label text-on-surface">
+<span class="font-bold">PKR 25,000</span> <span class="text-secondary font-normal">/mo</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Unavailable Listing Card (Muted) -->
+<div class="relative bg-surface-container-low rounded-xl overflow-hidden flex flex-col sm:flex-row gap-4 p-4 border border-bebe opacity-60 grayscale-[0.5]">
+<div class="relative w-full sm:w-[200px] aspect-square flex-shrink-0 rounded-[12px] overflow-hidden">
+<img alt="Property Image" class="w-full h-full object-cover" data-alt="An exterior shot of a modern townhouse with clean geometric lines, white stucco walls, and large black-framed windows. The scene is overcast, giving a slightly muted, desaturated tone to the image. A subtle hint of red is visible on the front door, maintaining brand consistency despite the muted context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq65AnOHmCYUU5NmZ6ChUfdI5Mb7weoe41yahWXS1Hvr-7rS_J-b9le_BcT2AFaCcMCZbt6c47FNw21-ZferrMJj613dUJoUusmeMCPXoywo1mL2ODpB7-JUYRGvgFiLnwKa7TGsmvu9vMoZ381r_-ChTZAj0TyJjbtlt5Yym7sb9GWWvWYMNDHspEvXNZctCQZVGi6gwRtVh_wfQ6GM_30K-_ZzZ-CA1KlGuiZjKo6XIsTK0a--ms0gqcsk28-boEQ_y5RTG48z_B"/>
+<button class="absolute top-3 right-3 p-1.5 bg-white/80 backdrop-blur-sm rounded-full text-secondary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined fill text-[20px]">favorite</span>
+</button>
+<div class="absolute inset-0 bg-black/10 flex items-center justify-center">
+<span class="bg-white/90 text-on-surface font-caption text-caption px-3 py-1.5 rounded-full backdrop-blur-sm">Rented</span>
+</div>
+</div>
+<div class="flex flex-col justify-between flex-grow py-1">
+<div>
+<div class="flex items-center justify-between mb-1">
+<span class="text-secondary text-caption font-caption">Added 3w ago</span>
+</div>
+<h3 class="font-ui-label text-ui-label text-on-surface mb-1">Luxury Villa with Pool</h3>
+<p class="font-body text-body text-secondary">4 Beds • 3 Baths • 3,500 sqft</p>
+</div>
+<div class="mt-4 pt-4 border-t border-bebe">
+<p class="font-ui-label text-ui-label text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">info</span> No longer available
+                    </p>
+</div>
+</div>
+</div>
+<!-- Empty State Example (Hidden by default, uncomment to see) -->
+<!--
+        <div class="flex-grow flex flex-col items-center justify-center text-center px-4 py-12">
+            <div class="w-16 h-16 bg-faint rounded-full flex items-center justify-center mb-6">
+                <span class="material-symbols-outlined text-secondary text-[32px]">favorite</span>
+            </div>
+            <h2 class="font-heading-sm text-heading-sm text-on-surface mb-2">Nothing saved yet</h2>
+            <p class="font-body text-body text-secondary max-w-sm mb-8">Tap the heart icon on listings you like to save them here for later.</p>
+            <button class="bg-primary text-on-primary font-ui-label text-ui-label px-8 py-3 rounded-full hover:bg-primary-container transition-colors">
+                Browse listings
+            </button>
+        </div>
+        -->
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center bg-white dark:bg-surface-container-lowest pb-safe px-4 z-50 h-[80px] border-t border-bebe dark:border-on-surface-variant md:hidden">
+<!-- Home (Inactive) -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-on-secondary-container pt-2 hover:text-primary-container scale-95 active:scale-90 transition-transform w-16" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-ui-label text-caption mt-1">Home</span>
+</a>
+<!-- Search (Inactive) -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-on-secondary-container pt-2 hover:text-primary-container scale-95 active:scale-90 transition-transform w-16" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-ui-label text-caption mt-1">Search</span>
+</a>
+<!-- Map (Inactive) -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-on-secondary-container pt-2 hover:text-primary-container scale-95 active:scale-90 transition-transform w-16" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-ui-label text-caption mt-1">Map</span>
+</a>
+<!-- Favorites (Active) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary border-t-2 border-primary pt-2 scale-95 active:scale-90 transition-transform w-16" href="#">
+<span class="material-symbols-outlined fill">favorite</span>
+<span class="font-ui-label text-caption mt-1">Favorites</span>
+</a>
+<!-- Profile (Inactive) -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-on-secondary-container pt-2 hover:text-primary-container scale-95 active:scale-90 transition-transform w-16" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-ui-label text-caption mt-1">Profile</span>
+</a>
+</nav>
+<!-- Desktop Navigation Alternative (Shown only on larger screens to satisfy the prompt's structural hints, though not strictly requested for the main canvas, it completes the "app" feel) -->
+<nav class="hidden md:flex fixed top-20 left-0 w-64 h-[calc(100vh-80px)] bg-white border-r border-bebe p-6 flex-col gap-4 z-30">
+<a class="flex items-center gap-3 p-3 rounded-lg text-secondary hover:bg-faint transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-ui-label text-ui-label">Home</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg text-secondary hover:bg-faint transition-colors" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-ui-label text-ui-label">Search</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg text-secondary hover:bg-faint transition-colors" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-ui-label text-ui-label">Map</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg bg-primary-fixed text-primary font-bold transition-colors" href="#">
+<span class="material-symbols-outlined fill">favorite</span>
+<span class="font-ui-label text-ui-label">Favorites</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-lg text-secondary hover:bg-faint transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-ui-label text-ui-label">Profile</span>
+</a>
+</nav>
+<!-- CSS to adjust main content padding when desktop nav is visible -->
+<style>
+        @media (min-width: 768px) {
+            main {
+                padding-left: calc(16rem + 40px) !important; /* 64px (nav width) + 40px (page margin) */
+            }
+        }
+    </style>
+</body></html>

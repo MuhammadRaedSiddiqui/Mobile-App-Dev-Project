@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Step 3 of 4: Cost and pricing</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#fbf9f8",
+                        "on-error": "#ffffff",
+                        "faint": "#f7f7f7",
+                        "tertiary-container": "#008558",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#e2dfde",
+                        "inverse-on-surface": "#f2f0f0",
+                        "secondary": "#5f5e5e",
+                        "on-surface": "#1b1c1c",
+                        "tertiary-fixed-dim": "#62dca3",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "primary-container": "#e21e4a",
+                        "outline": "#906f70",
+                        "primary-fixed-dim": "#ffb2b6",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1b1c1c",
+                        "on-secondary-container": "#636262",
+                        "primary-fixed": "#ffdada",
+                        "surface-variant": "#e4e2e2",
+                        "tertiary": "#006a45",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-tertiary-fixed-variant": "#005234",
+                        "tertiary-fixed": "#80f9bd",
+                        "on-primary": "#ffffff",
+                        "grey-500": "#c1c1c1",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#ba0036",
+                        "outline-variant": "#e5bdbe",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-bright": "#fbf9f8",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#dbdad9",
+                        "surface-container-high": "#e9e8e7",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "rausch-600": "#e00b41",
+                        "deco": "#dddddd",
+                        "background": "#fbf9f8",
+                        "surface-container-low": "#f5f3f3",
+                        "on-primary-fixed": "#40000d",
+                        "surface-container": "#efeded",
+                        "white": "#ffffff",
+                        "on-primary-container": "#fffbff",
+                        "inverse-surface": "#303031",
+                        "surface-container-highest": "#e4e2e2",
+                        "on-tertiary-container": "#f6fff6",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#be0038",
+                        "on-tertiary-fixed": "#002113",
+                        "inverse-primary": "#ffb2b6",
+                        "on-primary-fixed-variant": "#920029",
+                        "bebe": "#ebebeb",
+                        "on-surface-variant": "#5c3f41"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "12px",
+                        "xl": "24px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "section-gap": "48px",
+                        "page-margin": "40px",
+                        "lg": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "body": ["Plus Jakarta Sans"],
+                        "heading-lg": ["Plus Jakarta Sans"],
+                        "ui-label": ["Plus Jakarta Sans"],
+                        "subheading": ["Plus Jakarta Sans"],
+                        "heading-sm": ["Plus Jakarta Sans"],
+                        "caption": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body": ["14px", { "lineHeight": "1.43", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "heading-lg": ["28px", { "lineHeight": "1.43", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "ui-label": ["16px", { "lineHeight": "1.25", "letterSpacing": "normal", "fontWeight": "500" }],
+                        "subheading": ["20px", { "lineHeight": "1.2", "letterSpacing": "-0.009em", "fontWeight": "600" }],
+                        "heading-sm": ["22px", { "lineHeight": "1.18", "letterSpacing": "-0.02em", "fontWeight": "500" }],
+                        "caption": ["11px", { "lineHeight": "1.18", "letterSpacing": "normal", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fbf9f8; color: #1b1c1c; }
+        .input-no-spinner::-webkit-outer-spin-button,
+        .input-no-spinner::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .input-no-spinner {
+            -moz-appearance: textfield;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background min-h-screen flex flex-col pt-20 pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full h-20 bg-white dark:bg-on-surface border-b border-bebe dark:border-outline-variant flex items-center justify-between px-page-margin max-w-[1440px] mx-auto z-40 transition-colors">
+<button aria-label="Go back" class="text-primary dark:text-primary-fixed-dim hover:opacity-80 transition-opacity cursor-pointer active:scale-95 transition-transform flex items-center">
+<span class="material-symbols-outlined mr-2">arrow_back</span>
+</button>
+<h1 class="font-heading-sm text-heading-sm font-bold text-on-surface dark:text-inverse-on-surface absolute left-1/2 transform -translate-x-1/2">Step 3 of 4</h1>
+<div class="w-6"></div> <!-- Spacer to balance back button -->
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow max-w-[800px] w-full mx-auto px-page-margin flex flex-col gap-section-gap mt-xl">
+<section class="flex flex-col gap-lg">
+<h2 class="font-heading-lg text-heading-lg text-on-surface">Cost and pricing</h2>
+<p class="font-body text-body text-secondary">Set the base monthly rent and detail estimated additional costs to give prospective tenants a clear picture.</p>
+</section>
+<!-- Base Rent Input -->
+<section class="flex flex-col gap-md">
+<label class="font-subheading text-subheading text-on-surface" for="monthly-rent">Monthly rent</label>
+<div class="relative w-full md:w-1/2">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 font-heading-lg text-heading-lg text-on-surface">$</span>
+<input class="input-no-spinner w-full pl-12 pr-4 py-4 rounded-lg border border-bebe bg-white focus:border-primary focus:ring-1 focus:ring-primary font-heading-lg text-heading-lg text-on-surface transition-colors" id="monthly-rent" placeholder="0" type="number" value="2500"/>
+</div>
+</section>
+<!-- Additional Costs Highlighted Card -->
+<section class="bg-surface-container-low rounded-xl p-xl md:p-page-margin border border-bebe relative overflow-hidden">
+<!-- Decorative soft background element -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-fixed-dim opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+<div class="relative z-10 flex flex-col gap-xl">
+<h3 class="font-subheading text-subheading text-on-surface">Additional estimated costs</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+<!-- Deposit -->
+<div class="flex flex-col gap-sm">
+<label class="font-ui-label text-ui-label text-on-surface" for="deposit-months">Deposit (months)</label>
+<div class="relative">
+<input class="input-no-spinner w-full px-4 py-3 rounded-lg border border-bebe bg-white focus:border-primary focus:ring-1 focus:ring-primary font-body text-body text-on-surface" id="deposit-months" max="12" min="0" type="number" value="1"/>
+</div>
+</div>
+<!-- Maintenance -->
+<div class="flex flex-col gap-sm">
+<label class="font-ui-label text-ui-label text-on-surface" for="monthly-maintenance">Monthly maintenance</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 font-body text-body text-secondary">$</span>
+<input class="input-no-spinner w-full pl-8 pr-4 py-3 rounded-lg border border-bebe bg-white focus:border-primary focus:ring-1 focus:ring-primary font-body text-body text-on-surface placeholder-grey-500" id="monthly-maintenance" placeholder="0" type="number" value="150"/>
+</div>
+</div>
+<!-- Utilities -->
+<div class="flex flex-col gap-sm">
+<label class="font-ui-label text-ui-label text-on-surface" for="estimated-utilities">Estimated utilities</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 font-body text-body text-secondary">$</span>
+<input class="input-no-spinner w-full pl-8 pr-4 py-3 rounded-lg border border-bebe bg-white focus:border-primary focus:ring-1 focus:ring-primary font-body text-body text-on-surface placeholder-grey-500" id="estimated-utilities" placeholder="0" type="number" value="200"/>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<div class="w-full h-px bg-bebe my-md"></div>
+<!-- Total -->
+<div class="flex justify-between items-center pt-md">
+<span class="font-subheading text-subheading text-on-surface">Estimated monthly total</span>
+<span class="font-heading-lg text-heading-lg text-on-surface">$2,850</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Fixed Bottom Bar for Transactional Flow -->
+<div class="fixed bottom-0 left-0 w-full bg-white border-t border-bebe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50 p-lg px-page-margin flex justify-between items-center max-w-[1440px] mx-auto right-0">
+<button class="font-ui-label text-ui-label text-on-surface hover:bg-surface-container-low px-xl py-md rounded-lg transition-colors border border-transparent hover:border-bebe">
+            Back
+        </button>
+<button class="bg-primary hover:bg-rausch-600 text-on-primary font-ui-label text-ui-label px-xl py-md rounded-full transition-colors active:scale-[0.99]">
+            Continue
+        </button>
+</div>
+<!-- Navigation suppressed due to transactional flow intent -->
+</body></html>

@@ -2,6 +2,7 @@ import type { NavigatorScreenParams } from '@react-navigation/native';
 
 /** Unauthenticated flow. */
 export type AuthStackParamList = {
+  Onboarding: undefined;
   Login: undefined;
   Register: undefined;
 };
@@ -18,7 +19,7 @@ export type SeekerTabParamList = {
 /** Agent bottom tabs. */
 export type AgentTabParamList = {
   Dashboard: undefined;
-  Listings: undefined;
+  Inbox: undefined;
   Profile: undefined;
 };
 
@@ -35,6 +36,8 @@ export type MainStackParamList = {
   AgentProfile: { agentId: string };
   NotificationSettings: undefined;
   SavedSearches: undefined;
+  Messages: undefined;
+  MessageThread: { threadId: string; listingId: string; agentId: string; listingTitle?: string; agentName?: string };
   NotFound: undefined;
 };
 
