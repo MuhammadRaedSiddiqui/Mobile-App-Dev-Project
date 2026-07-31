@@ -8,6 +8,7 @@ import {
   findUserByUid,
   getListing,
   getMessageThread,
+  hasMessageThread,
   listMessageThreads,
   markThreadRead,
 } from '@/services/store';
@@ -45,6 +46,9 @@ router.post('/', validate(sendSchema), (req: Request, res: Response) => {
     if (!seekerUid) throw Errors.validation('seekerUid is required for agent replies.');
     const seeker = findUserByUid(seekerUid);
     if (!seeker || seeker.role !== 'seeker') throw Errors.notFound('Seeker not found.');
+    if (!hasMessageThread(listingId, seekerUid, user.uid)) {
+      throw Errors.forbidden('You can only reply to seekers who contacted you about this listing.');
+    }
     toUid = seekerUid;
   } else {
     throw Errors.forbidden();

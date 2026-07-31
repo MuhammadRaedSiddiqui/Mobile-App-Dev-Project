@@ -17,7 +17,14 @@ import {
 import { isVisibleInDefaultBrowse } from './visibility';
 import { encodeGeohash, isWithinRadiusKm } from '@/utils/geo';
 import { tokenize } from '@/utils/tokenize';
-import { CostInput, FreshnessStatus, ListingStatus, PriceType, UserRole } from '@/utils/types';
+import {
+  CostInput,
+  FreshnessStatus,
+  ListingStatus,
+  PriceType,
+  ReportReason,
+  UserRole,
+} from '@/utils/types';
 
 export const MOCK_TOKEN_PREFIX = 'mock-token-';
 
@@ -56,6 +63,11 @@ interface StoredListing {
   createdAt: string;
   updatedAt: string;
   reporters: Set<string>;
+  /**
+   * Parallel to `reporters`: the reason each one gave. `reporters` stays the
+   * counter, so freshness and browse suppression are unaffected by reasons.
+   */
+  reportReasons: Map<string, ReportReason>;
   /** viewerUid -> last counted-view timestamp (ms), for unique-view dedup. */
   viewers: Map<string, number>;
 }
@@ -166,6 +178,7 @@ const listings: StoredListing[] = SEEDS.map((s) => ({
   createdAt: '2026-07-01T09:00:00Z',
   updatedAt: '2026-07-25T09:00:00Z',
   reporters: new Set(s.reporters ?? []),
+  reportReasons: new Map(),
   viewers: new Map(),
 }));
 
@@ -201,6 +214,11 @@ let messageCounter = 1;
 
 function buildThreadId(listingId: string, seekerUid: string, agentUid: string): string {
   return `thread-${listingId}-${seekerUid}-${agentUid}`;
+}
+
+/** True only when this seeker has already opened a conversation on this listing. */
+export function hasMessageThread(listingId: string, seekerUid: string, agentUid: string): boolean {
+  return messages.has(buildThreadId(listingId, seekerUid, agentUid));
 }
 
 export function createMessage(input: {
@@ -582,6 +600,7 @@ export function verifyListing(listingId: string, agentUid: string, now: Date = n
   if (l.agentId !== agentUid) return { ok: false as const, reason: 'forbidden' as const };
   l.lastVerifiedAt = now;
   l.reporters.clear();
+  l.reportReasons.clear();
   return { ok: true as const, freshness: serializeListing(l, now).freshness };
 }
 
@@ -589,6 +608,7 @@ export function reportListing(
   listingId: string,
   reporterUid: string,
   reporterRole: 'seeker' | 'agent',
+  reason?: ReportReason,
 ) {
   const l = rawListing(listingId);
   if (!l) return { ok: false as const, reason: 'not_found' as const };
@@ -598,6 +618,8 @@ export function reportListing(
 
   const alreadyReported = l.reporters.has(reporterUid);
   l.reporters.add(reporterUid); // idempotent per reporter
+  // First report wins — a repeat tap can't rewrite the reason it was filed under.
+  if (reason && !alreadyReported) l.reportReasons.set(reporterUid, reason);
   return {
     ok: true as const,
     unavailableReports: l.reporters.size,
@@ -683,6 +705,7 @@ export function createListing(input: CreateListingInput, now: Date = new Date())
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
     reporters: new Set(),
+    reportReasons: new Map(),
     viewers: new Map(),
   };
   listings.push(l);
@@ -773,6 +796,7 @@ export function resetDemoState() {
     l.lastVerifiedAt = daysAgo(seed.daysSince);
     l.viewCount = seed.views;
     l.reporters = new Set(seed.reporters ?? []);
+    l.reportReasons = new Map();
     l.viewers = new Map();
     l.title = seed.title;
     l.description = seed.description;

@@ -15,6 +15,7 @@ import { config } from '@/config/env';
 import { PAGE_SIZE } from '@/utils/constants';
 import { Category, CategoryId, Listing, ListingDetail, Paginated } from '@/utils/types';
 import { MOCK_AGENTS, MOCK_CATEGORIES, MOCK_LISTINGS } from '@/mocks/data';
+import { isMockSuppressed } from '@/mocks/reportState';
 import { isWithinRadiusKm } from '@/utils/geo';
 import { api } from './api';
 
@@ -91,7 +92,10 @@ function applyMockQuery(query: ListingQuery): Paginated<Listing> {
   const offset = decodeCursor(query.cursor);
   const fresh = query.fresh ?? ['fresh', 'aging']; // default browse excludes stale
 
-  let items = MOCK_LISTINGS.filter((l) => l.status === 'active');
+  // Enough seekers reporting a listing as unavailable pulls it out of browse and
+  // search, matching isVisibleInDefaultBrowse in backend/src/services/visibility.ts.
+  // getListingById stays unfiltered so an existing link or favorite still opens.
+  let items = MOCK_LISTINGS.filter((l) => l.status === 'active' && !isMockSuppressed(l.listingId));
 
   if (query.category) items = items.filter((l) => l.categoryId === query.category);
   if (query.minPrice != null) items = items.filter((l) => l.price >= query.minPrice!);

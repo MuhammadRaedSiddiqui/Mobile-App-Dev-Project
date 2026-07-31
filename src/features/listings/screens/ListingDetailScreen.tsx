@@ -42,6 +42,10 @@ export function ListingDetailScreen({ route, navigation }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [reported, setReported] = useState(false);
+  // Only known once this device reports — the read path doesn't return the count.
+  const [reportCount, setReportCount] = useState<number | null>(null);
+  const [suppressed, setSuppressed] = useState(false);
+  const [suppressionThreshold, setSuppressionThreshold] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [similar, setSimilar] = useState<Listing[]>([]);
   const [similarLoading, setSimilarLoading] = useState(false);
@@ -116,36 +120,27 @@ export function ListingDetailScreen({ route, navigation }: Props) {
     };
   }, [listingId, user?.uid, user?.role]);
 
+  // The report screen hands its result back as a param — apply it once, then
+  // clear it so a later re-render (or a re-verify) doesn't resurrect it.
+  const reportResult = route.params.reportResult;
+  useEffect(() => {
+    if (!reportResult) return;
+    setReported(true);
+    setReportCount(reportResult.count);
+    setSuppressed(reportResult.suppressed);
+    setSuppressionThreshold(reportResult.suppressionThreshold);
+    if (reportResult.alreadyReported) {
+      Alert.alert('Already reported', 'You’ve already flagged this listing.');
+    }
+    navigation.setParams({ reportResult: undefined });
+  }, [reportResult, navigation]);
+
   const isFavorite = favoriteIds.includes(listingId);
   const isOwner = user?.role === 'agent' && detail?.listing.agentId === user.uid;
   const canReport = user?.role === 'seeker' && !isOwner;
 
   const onReport = () => {
-    Alert.alert(
-      'Report as unavailable?',
-      'We’ll flag this listing for the agent to re-verify. You can only report once.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Report',
-          style: 'destructive',
-          onPress: async () => {
-            setBusy(true);
-            try {
-              const res = await trustService.report(listingId, user?.uid);
-              setReported(true);
-              if (res.alreadyReported) {
-                Alert.alert('Already reported', 'You’ve already flagged this listing.');
-              }
-            } catch {
-              Alert.alert('Couldn’t report', 'Please try again in a moment.');
-            } finally {
-              setBusy(false);
-            }
-          },
-        },
-      ],
-    );
+    navigation.navigate('ReportListing', { listingId });
   };
 
   const onVerify = async () => {
@@ -153,6 +148,10 @@ export function ListingDetailScreen({ route, navigation }: Props) {
     try {
       const res = await trustService.verify(listingId);
       setFreshness(res.freshness);
+      // Re-verifying wipes the outstanding reports, so drop the local echo too.
+      setReportCount(null);
+      setSuppressed(false);
+      setSuppressionThreshold(null);
       agentService.applyVerified(listingId, res.freshness);
       dispatch(invalidateBrowse());
     } catch {
@@ -234,6 +233,20 @@ export function ListingDetailScreen({ route, navigation }: Props) {
         <View style={styles.body}>
           <FreshnessBadge freshness={freshness} />
 
+          {reportCount != null && reportCount > 0 ? (
+            <View style={[styles.reportBanner, suppressed && styles.reportBannerStrong]}>
+              <Text style={styles.reportBannerText}>
+                {suppressed
+                  ? `Reported as unavailable by ${reportCount} ${
+                      reportCount === 1 ? 'person' : 'people'
+                    }. It’s been hidden from browse and search until the agent re-verifies it.`
+                  : `Reported as unavailable by ${reportCount} ${
+                      reportCount === 1 ? 'person' : 'people'
+                    }. ${(suppressionThreshold ?? reportCount) - reportCount} more and it drops out of browse.`}
+              </Text>
+            </View>
+          ) : null}
+
           <Text style={styles.title}>{listing.title}</Text>
           <Text style={styles.meta}>
             {listing.location.area} · {formatArea(listing.area)}
@@ -309,14 +322,15 @@ export function ListingDetailScreen({ route, navigation }: Props) {
             />
           ) : canReport && reported ? (
             <Text style={styles.reportedNote}>
-              Thanks — we’ve flagged this for the agent to re-verify.
+              {suppressed
+                ? 'Thanks — enough people have reported this that we’ve stopped showing it in browse. The agent has been asked to re-verify.'
+                : 'Thanks — we’ve flagged this for the agent to re-verify.'}
             </Text>
           ) : canReport ? (
             <Button
-              label="Report as no longer available"
+              label="Report this listing"
               variant="ghost"
               onPress={onReport}
-              loading={busy}
               fullWidth
               style={styles.action}
             />
@@ -508,6 +522,14 @@ const styles = StyleSheet.create({
     marginTop: spacing.xl,
     textAlign: 'center',
   },
+  reportBanner: {
+    backgroundColor: colors.staleBg,
+    borderRadius: radii.card,
+    padding: spacing.md,
+    marginTop: spacing.xs,
+  },
+  reportBannerStrong: { borderWidth: 1, borderColor: colors.stale },
+  reportBannerText: { ...typography.caption, color: colors.stale },
   similarEmpty: { ...typography.body, color: colors.textSecondary },
   similarList: { gap: spacing.sm, marginTop: spacing.sm },
   similarRow: {

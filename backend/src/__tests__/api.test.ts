@@ -103,14 +103,14 @@ describe('Estate Ease API (mock mode)', () => {
     });
 
     it('paginates with an opaque cursor, ten per page, no overlap', async () => {
-      const first = await request(app).get('/v1/listings');
+      const first = await request(app).get('/v1/listings').query({ includeStale: 'true' });
       expect(first.body.items).toHaveLength(10);
       expect(first.body.hasMore).toBe(true);
       expect(first.body.nextCursor).toBeTruthy();
 
       const second = await request(app)
         .get('/v1/listings')
-        .query({ cursor: first.body.nextCursor });
+        .query({ cursor: first.body.nextCursor, includeStale: 'true' });
       const firstIds = new Set(first.body.items.map((l: { listingId: string }) => l.listingId));
       const secondIds = second.body.items.map((l: { listingId: string }) => l.listingId);
       expect(secondIds.every((id: string) => !firstIds.has(id))).toBe(true);
@@ -325,6 +325,7 @@ describe('Estate Ease API (mock mode)', () => {
       const first = await request(app).post('/v1/listings/lst-001/report').set(auth);
       const second = await request(app).post('/v1/listings/lst-001/report').set(auth);
       expect(first.status).toBe(200);
+      expect(first.body).toMatchObject({ suppressed: false, suppressionThreshold: 3 });
       expect(second.body.unavailableReports).toBe(first.body.unavailableReports); // same reporter
       expect(second.body.alreadyReported).toBe(true);
     });
@@ -658,5 +659,20 @@ describe('messages', () => {
       toUid: 'seeker-ayesha',
       threadId: inquiry.body.message.threadId,
     });
+  });
+
+  it('forbids an agent from starting a conversation with a seeker', async () => {
+    const agentToken = await loginAs('danish@example.com');
+
+    const reply = await request(app)
+      .post('/v1/messages')
+      .set({ Authorization: `Bearer ${agentToken}` })
+      .send({
+        listingId: 'lst-003',
+        seekerUid: 'seeker-ayesha',
+        text: 'Unsolicited message',
+      });
+
+    expect(reply.status).toBe(403);
   });
 });

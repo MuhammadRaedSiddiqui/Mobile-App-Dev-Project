@@ -51,6 +51,13 @@ export interface Freshness {
   daysSince: number;
 }
 
+/**
+ * Why a seeker reported a listing. Recorded alongside the report, but note that
+ * every reason counts the same toward UNAVAILABLE_REPORT_THRESHOLD — nothing
+ * routes 'scam' or 'offensive' anywhere separately yet.
+ */
+export type ReportReason = 'inaccurate' | 'unavailable' | 'scam' | 'offensive' | 'other';
+
 /** True-cost breakdown, computed server-side. estimatedMonthlyTotal is authoritative. */
 export interface CostBreakdown {
   rent: number;

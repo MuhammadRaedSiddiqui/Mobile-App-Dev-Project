@@ -3,6 +3,9 @@ import { authenticate, requireRole } from '@/middleware/auth';
 import { Errors } from '@/utils/errors';
 import { reportLimiter } from '@/middleware/rateLimit';
 import { hasReported, reportListing, verifyListing } from '@/services/store';
+import { REPORT_REASONS, ReportReason } from '@/utils/types';
+import { config } from '@/config/env';
+import { reportThresholdReached } from '@/services/visibility';
 
 const router = Router();
 
@@ -19,9 +22,17 @@ router.post('/:id/verify', authenticate, requireRole('agent'), (req: Request, re
 /**
  * Seeker report-as-unavailable. Idempotent per reporter; agents and owners are
  * rejected. Does not expose other reporters' identities.
+ *
+ * `reason` is optional (older clients send no body) but must be one of the known
+ * values when present. Every reason counts the same toward suppression.
  */
 router.post('/:id/report', authenticate, reportLimiter, (req: Request, res: Response) => {
-  const result = reportListing(req.params.id, req.user!.uid, req.user!.role);
+  const raw = req.body?.reason;
+  if (raw !== undefined && !REPORT_REASONS.includes(raw)) {
+    throw Errors.validation('That report reason is not recognised.');
+  }
+  const reason = raw as ReportReason | undefined;
+  const result = reportListing(req.params.id, req.user!.uid, req.user!.role, reason);
   if (!result.ok) {
     if (result.reason === 'forbidden') {
       throw Errors.forbidden('Only seekers can report a listing as unavailable.');
@@ -35,6 +46,8 @@ router.post('/:id/report', authenticate, reportLimiter, (req: Request, res: Resp
     success: true,
     unavailableReports: result.unavailableReports,
     alreadyReported: result.alreadyReported,
+    suppressed: reportThresholdReached(result.unavailableReports),
+    suppressionThreshold: config.trust.unavailableReportThreshold,
   });
 });
 

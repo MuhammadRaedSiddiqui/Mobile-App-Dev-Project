@@ -3,22 +3,21 @@
  * (seeker). Both are WRITES → Express only.
  */
 import { config } from '@/config/env';
-import { Freshness } from '@/utils/types';
+import { Freshness, ReportReason } from '@/utils/types';
 import { markReported } from '@/utils/reportedListings';
+import { UNAVAILABLE_REPORT_THRESHOLD } from '@/utils/constants';
+import { addMockReport, clearMockReports } from '@/mocks/reportState';
 import { api } from './api';
 
 function delay<T>(value: T, ms = 300): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms));
 }
 
-/** Mock reporter counts so three distinct seekers can suppress a listing in demos. */
-const mockReportCounts = new Map<string, Set<string>>();
-
 export const trustService = {
   /** Agent-owner one-tap re-verify. Clears reports and resets freshness to today. */
   async verify(listingId: string): Promise<{ freshness: Freshness }> {
     if (config.useMockData) {
-      mockReportCounts.delete(listingId);
+      clearMockReports(listingId);
       return delay({
         freshness: {
           status: 'fresh',
@@ -34,25 +33,39 @@ export const trustService = {
   /**
    * Seeker report-as-unavailable. Idempotent per reporter.
    * Pass reporterUid so mock mode can de-dupe like the server.
+   *
+   * `reason` is recorded alongside the report but does not change the count —
+   * every reason counts the same toward UNAVAILABLE_REPORT_THRESHOLD.
+   *
+   * `suppressed` is true once the listing has collected enough reports to drop
+   * out of default browse, so the caller can say so instead of guessing.
    */
   async report(
     listingId: string,
     reporterUid?: string,
-  ): Promise<{ unavailableReports: number; alreadyReported: boolean }> {
+    reason?: ReportReason,
+  ): Promise<{
+    unavailableReports: number;
+    alreadyReported: boolean;
+    suppressed: boolean;
+    suppressionThreshold: number;
+  }> {
     if (config.useMockData) {
-      const uid = reporterUid ?? 'anonymous';
-      const set = mockReportCounts.get(listingId) ?? new Set<string>();
-      const alreadyReported = set.has(uid);
-      set.add(uid);
-      mockReportCounts.set(listingId, set);
+      const result = addMockReport(listingId, reporterUid ?? 'anonymous', reason);
       if (reporterUid) await markReported(reporterUid, listingId);
-      return delay({ unavailableReports: set.size, alreadyReported });
+      return delay({
+        ...result,
+        suppressed: result.unavailableReports >= UNAVAILABLE_REPORT_THRESHOLD,
+        suppressionThreshold: UNAVAILABLE_REPORT_THRESHOLD,
+      });
     }
-    const { data } = await api.post(`/listings/${listingId}/report`);
+    const { data } = await api.post(`/listings/${listingId}/report`, { reason });
     if (reporterUid) await markReported(reporterUid, listingId);
     return {
-      unavailableReports: data.unavailableReports,
+      unavailableReports: Number(data.unavailableReports ?? 0),
       alreadyReported: Boolean(data.alreadyReported),
+      suppressed: Boolean(data.suppressed),
+      suppressionThreshold: Number(data.suppressionThreshold),
     };
   },
 

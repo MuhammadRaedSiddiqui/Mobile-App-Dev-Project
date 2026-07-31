@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ListingDetailScreen } from '@/features/listings/screens/ListingDetailScreen';
+import { ReportListingScreen } from '@/features/listings/screens/ReportListingScreen';
 import { ListingFormScreen } from '@/features/agent/screens/ListingFormScreen';
 import { ProfileEditScreen } from '@/features/auth/screens/ProfileEditScreen';
 import { NotificationSettingsScreen } from '@/features/auth/screens/NotificationSettingsScreen';
@@ -29,6 +30,18 @@ function AgentListingForm(props: NativeStackScreenProps<MainStackParamList, 'Lis
   return <ListingFormScreen {...props} />;
 }
 
+/** Seeker-only gate: agents re-verify their own listings, they don't report them. */
+function SeekerReportListing(props: NativeStackScreenProps<MainStackParamList, 'ReportListing'>) {
+  const role = useAppSelector((s) => s.auth.user?.role);
+  useEffect(() => {
+    if (role !== 'seeker') {
+      props.navigation.replace('NotFound');
+    }
+  }, [role, props.navigation]);
+  if (role !== 'seeker') return null;
+  return <ReportListingScreen {...props} />;
+}
+
 export function MainNavigator() {
   const role = useAppSelector((s) => s.auth.user?.role);
 
@@ -40,6 +53,7 @@ export function MainNavigator() {
         <Stack.Screen name="SeekerTabs" component={SeekerTabs} />
       )}
       <Stack.Screen name="ListingDetail" component={ListingDetailScreen} />
+      <Stack.Screen name="ReportListing" component={SeekerReportListing} />
       <Stack.Screen
         name="ListingForm"
         component={AgentListingForm}

@@ -1,7 +1,18 @@
 import { View, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-type IconName = 'home' | 'search' | 'map' | 'heart' | 'heart-filled' | 'person' | 'home-work' | 'mail';
+type IconName =
+  | 'home'
+  | 'search'
+  | 'map'
+  | 'heart'
+  | 'heart-filled'
+  | 'person'
+  | 'home-work'
+  | 'mail'
+  | 'close'
+  | 'help'
+  | 'lock';
 
 interface TabIconProps {
   name: IconName;
@@ -42,6 +53,18 @@ const paths: Record<IconName, { d: string; viewBox?: string; filled?: string }> 
   },
   mail: {
     d: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+    viewBox: '0 0 24 24',
+  },
+  close: {
+    d: 'M6 6l12 12M18 6L6 18',
+    viewBox: '0 0 24 24',
+  },
+  help: {
+    d: 'M12 21a9 9 0 100-18 9 9 0 000 18zM9.6 9.4a2.5 2.5 0 114 2.4c-.9.6-1.6 1.1-1.6 2.2M12 17h.01',
+    viewBox: '0 0 24 24',
+  },
+  lock: {
+    d: 'M8 10V7a4 4 0 018 0v3M6.5 10h11a1.5 1.5 0 011.5 1.5v7a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 015 18.5v-7A1.5 1.5 0 016.5 10z',
     viewBox: '0 0 24 24',
   },
 };

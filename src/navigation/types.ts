@@ -30,7 +30,20 @@ export type AgentTabParamList = {
 export type MainStackParamList = {
   SeekerTabs: NavigatorScreenParams<SeekerTabParamList>;
   AgentTabs: NavigatorScreenParams<AgentTabParamList>;
-  ListingDetail: { listingId: string };
+  /**
+   * `reportResult` is handed back by ReportListing so the detail screen can show
+   * the report banner without a refetch — the read path doesn't return the count.
+   */
+  ListingDetail: {
+    listingId: string;
+    reportResult?: {
+      count: number;
+      suppressed: boolean;
+      alreadyReported: boolean;
+      suppressionThreshold: number;
+    };
+  };
+  ReportListing: { listingId: string };
   ListingForm: { listingId?: string } | undefined;
   ProfileEdit: undefined;
   AgentProfile: { agentId: string };

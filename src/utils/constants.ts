@@ -20,4 +20,12 @@ export const CACHE_TTL_MS = 60 * 60 * 1000;
 /** Cursor pagination page size (NFR 8.3.2). */
 export const PAGE_SIZE = 10;
 
+/**
+ * Unavailability reports needed before a listing drops out of default browse.
+ * Mirrors the server's UNAVAILABLE_REPORT_THRESHOLD (backend/src/config/env.ts);
+ * the client keeps its own copy so mock mode and the detail screen can apply the
+ * same rule without a round trip.
+ */
+export const UNAVAILABLE_REPORT_THRESHOLD = 3;
+
 export const CATEGORIES_ORDER = ['one-bed', 'portion', 'shared', 'studio'] as const;
