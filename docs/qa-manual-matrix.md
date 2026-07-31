@@ -7,6 +7,7 @@ Use this checklist on **iOS** and **Android** (Expo Go or a development build). 
 | Role   | Email              | Password    |
 |--------|--------------------|-------------|
 | Seeker | ayesha@example.com | password123 |
+| Seeker | raed@example.com   | password123 |
 | Agent  | danish@example.com | password123 |
 
 **Before a demo walkthrough:** `POST http://localhost:4000/v1/demo/reset` (API must be running with `MOCK_MODE=true`).

@@ -25,6 +25,7 @@ walk the whole product, confirm each phase's behaviour, and record evidence.
 | Role   | Email                | Password      | uid            |
 |--------|----------------------|---------------|----------------|
 | Seeker | ayesha@example.com   | password123   | seeker-ayesha  |
+| Seeker | raed@example.com     | password123   | seeker-raed    |
 | Agent  | danish@example.com   | password123   | agent-danish   |
 
 **Pre-flight (developer sanity — should already pass):**

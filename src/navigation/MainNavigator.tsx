@@ -7,6 +7,7 @@ import { ProfileEditScreen } from '@/features/auth/screens/ProfileEditScreen';
 import { NotificationSettingsScreen } from '@/features/auth/screens/NotificationSettingsScreen';
 import { IdentityVerificationScreen } from '@/features/auth/screens/IdentityVerificationScreen';
 import { VerificationResultScreen } from '@/features/auth/screens/VerificationResultScreen';
+import { SupportScreen } from '@/features/auth/screens/SupportScreen';
 import { SavedSearchesScreen } from '@/features/search/screens/SavedSearchesScreen';
 import { AgentProfileScreen } from '@/features/agent/screens/AgentProfileScreen';
 import { MessagesScreen } from '@/features/messages/screens/MessagesScreen';
@@ -82,6 +83,7 @@ export function MainNavigator() {
       />
       <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen} />
       <Stack.Screen name="VerificationResult" component={VerificationResultScreen} />
+      <Stack.Screen name="Support" component={SupportScreen} />
       <Stack.Screen
         name="SavedSearches"
         component={SavedSearchesScreen}

@@ -431,13 +431,22 @@ export const MOCK_LISTINGS: Listing[] = SEEDS.map((s) => ({
   updatedAt: '2026-07-20T09:00:00Z',
 }));
 
-/** Demo accounts for mock auth — one seeker, one agent. */
+/** Demo accounts for mock auth — two seekers and one agent. */
 export const MOCK_USERS: Array<UserProfile & { password: string }> = [
   {
     uid: 'seeker-ayesha',
     email: 'ayesha@example.com',
     password: 'password123',
     displayName: 'Ayesha Khan',
+    role: 'seeker',
+    isActive: true,
+    verificationStatus: 'verified',
+  },
+  {
+    uid: 'seeker-raed',
+    email: 'raed@example.com',
+    password: 'password123',
+    displayName: 'Raed',
     role: 'seeker',
     isActive: true,
     verificationStatus: 'verified',

@@ -78,7 +78,10 @@ export function ProfileScreen() {
         ) : (
           <Row label="Notifications" note="Seeker feature" />
         )}
-        <Row label="Help & support" note="Later" />
+        <Pressable style={styles.row} onPress={() => navigation.navigate('Support')}>
+          <Text style={styles.rowLabel}>Help & support</Text>
+          <Text style={styles.rowAction}>›</Text>
+        </Pressable>
       </View>
 
       <Button

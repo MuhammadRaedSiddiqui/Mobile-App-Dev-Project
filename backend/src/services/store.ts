@@ -84,6 +84,14 @@ const users: StoredUser[] = [
     verificationStatus: 'verified',
   },
   {
+    uid: 'seeker-raed',
+    email: 'raed@example.com',
+    password: 'password123',
+    displayName: 'Raed',
+    role: 'seeker',
+    verificationStatus: 'verified',
+  },
+  {
     uid: 'agent-danish',
     email: 'danish@example.com',
     password: 'password123',

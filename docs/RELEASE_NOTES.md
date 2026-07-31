@@ -32,6 +32,7 @@ Phase 9 focuses on regression, performance, accessibility, and delivery document
 2. `POST http://localhost:4000/v1/demo/reset`
 3. Root: `npm install && npm start` → Expo Go
 4. Seeker: ayesha@example.com / password123  
+   Seeker: raed@example.com / password123  
    Agent: danish@example.com / password123
 5. Walkthroughs: seeker browse→filter→detail→cost→favorite→report; agent create→verify→clear reports
 

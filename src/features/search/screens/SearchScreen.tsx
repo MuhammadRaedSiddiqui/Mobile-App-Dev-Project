@@ -111,6 +111,16 @@ export function SearchScreen() {
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const filterDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const recentMutationRef = useRef<Promise<void>>(Promise.resolve());
+  const recentHistoryVersionRef = useRef(0);
+  const clearingRecentRef = useRef(false);
+
+  /** Keep storage mutations ordered so Clear cannot lose a race with a pending save. */
+  const queueRecentMutation = useCallback((mutation: () => Promise<void>) => {
+    const next = recentMutationRef.current.then(mutation, mutation);
+    recentMutationRef.current = next.catch(() => undefined);
+    return next;
+  }, []);
 
   useEffect(() => {
     if (!uid) {
@@ -118,10 +128,13 @@ export function SearchScreen() {
       return;
     }
     let active = true;
+    const historyVersion = recentHistoryVersionRef.current;
     (async () => {
       const [recent, saved] = await Promise.all([getRecentSearches(uid), loadSearchFilters(uid)]);
       if (!active) return;
-      setRecentSearches(recent);
+      // A Clear tap may happen while this initial read is in flight. Never let
+      // that stale snapshot put removed terms back into the visible list.
+      if (historyVersion === recentHistoryVersionRef.current) setRecentSearches(recent);
       setMinPrice(saved.minPrice);
       setMaxPrice(saved.maxPrice);
       setCity(saved.city);
@@ -191,24 +204,35 @@ export function SearchScreen() {
       setCommittedQ(trimmed);
       setShowRecent(false);
       if (trimmed && uid) {
-        await saveRecentSearch(uid, trimmed);
+        await queueRecentMutation(() => saveRecentSearch(uid, trimmed));
         setRecentSearches(await getRecentSearches(uid));
       }
     },
-    [uid],
+    [uid, queueRecentMutation],
   );
 
   const handleClearRecent = useCallback(async () => {
-    if (uid) await clearRecentSearches(uid);
+    if (clearingRecentRef.current) return;
+    clearingRecentRef.current = true;
+    recentHistoryVersionRef.current += 1;
+    if (__DEV__) console.log('[recent-searches] clear:tap', { uid, visibleTerms: recentSearches });
     setRecentSearches([]);
-  }, [uid]);
+    setShowRecent(false);
+    try {
+      if (uid) await queueRecentMutation(() => clearRecentSearches(uid));
+      setRecentSearches([]);
+    } finally {
+      clearingRecentRef.current = false;
+    }
+    if (__DEV__) console.log('[recent-searches] clear:ui-complete', { uid });
+  }, [uid, queueRecentMutation, recentSearches]);
 
   const handleRemoveRecent = useCallback(
     async (term: string) => {
-      if (uid) await removeRecentSearch(uid, term);
       setRecentSearches((prev) => prev.filter((t) => t !== term));
+      if (uid) await queueRecentMutation(() => removeRecentSearch(uid, term));
     },
-    [uid],
+    [uid, queueRecentMutation],
   );
 
   useEffect(() => {
@@ -390,7 +414,6 @@ export function SearchScreen() {
           value={inputValue}
           onChangeText={handleInputChange}
           onFocus={() => setShowRecent(true)}
-          onBlur={() => setTimeout(() => setShowRecent(false), 150)}
           onSubmitEditing={() => commitSearch(inputValue)}
           returnKeyType="search"
           autoCorrect={false}
@@ -406,7 +429,7 @@ export function SearchScreen() {
         <View style={styles.recentBox}>
           <View style={styles.recentHeader}>
             <Text style={styles.recentLabel}>Recent</Text>
-            <Pressable onPress={handleClearRecent}>
+            <Pressable onPressIn={handleClearRecent} accessibilityRole="button" accessibilityLabel="Clear recent searches">
               <Text style={styles.clearText}>Clear</Text>
             </Pressable>
           </View>
@@ -629,6 +652,9 @@ export function SearchScreen() {
       <FlatList
         data={loading || !filtersHydrated ? [] : listings}
         keyExtractor={(item) => item.listingId}
+        // Recent-search controls sit in the header while this input has focus.
+        // Without this, FlatList consumes the first tap to dismiss the keyboard.
+        keyboardShouldPersistTaps="always"
         ListHeaderComponent={header}
         contentContainerStyle={styles.listContent}
         onEndReached={() => !loading && hasMore && loadMore()}

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { NavigationContainer, DefaultTheme, LinkingOptions } from '@react-navigation/native';
 import { SplashScreen } from '@/components/common/SplashScreen';
@@ -64,10 +64,18 @@ export function RootNavigator() {
   const dispatch = useAppDispatch();
   const status = useAppSelector((s) => s.auth.status);
   const uid = useAppSelector((s) => s.auth.user?.uid);
+  const [minimumSplashComplete, setMinimumSplashComplete] = useState(false);
 
   useEffect(() => {
     dispatch(restoreSession());
   }, [dispatch]);
+
+  // Keep the branded launch screen visible long enough to be perceived even
+  // when local session restoration completes immediately.
+  useEffect(() => {
+    const timer = setTimeout(() => setMinimumSplashComplete(true), 1200);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (status === 'authenticated' && uid) {
@@ -83,7 +91,7 @@ export function RootNavigator() {
         linking={status === 'authenticated' ? linking : undefined}
         fallback={<SplashScreen />}
       >
-        {status === 'restoring' ? (
+        {status === 'restoring' || !minimumSplashComplete ? (
           <SplashScreen />
         ) : status === 'authenticated' ? (
           <MainNavigator />

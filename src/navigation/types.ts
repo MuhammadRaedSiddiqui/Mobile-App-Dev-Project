@@ -50,6 +50,7 @@ export type MainStackParamList = {
   NotificationSettings: undefined;
   IdentityVerification: undefined;
   VerificationResult: { outcome: 'success' | 'failed' };
+  Support: undefined;
   SavedSearches: undefined;
   Messages: undefined;
   MessageThread: { threadId: string; listingId: string; agentId: string; listingTitle?: string; agentName?: string };
