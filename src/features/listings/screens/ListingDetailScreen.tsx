@@ -138,8 +138,17 @@ export function ListingDetailScreen({ route, navigation }: Props) {
   const isFavorite = favoriteIds.includes(listingId);
   const isOwner = user?.role === 'agent' && detail?.listing.agentId === user.uid;
   const canReport = user?.role === 'seeker' && !isOwner;
+  const isVerified = user?.verificationStatus === 'verified';
+
+  const promptVerification = () => {
+    Alert.alert('Verify your identity', 'Complete identity verification to use this feature.', [
+      { text: 'Not now', style: 'cancel' },
+      { text: 'Verify now', onPress: () => navigation.navigate('IdentityVerification') },
+    ]);
+  };
 
   const onReport = () => {
+    if (!isVerified) return promptVerification();
     navigation.navigate('ReportListing', { listingId });
   };
 
@@ -328,7 +337,7 @@ export function ListingDetailScreen({ route, navigation }: Props) {
             </Text>
           ) : canReport ? (
             <Button
-              label="Report this listing"
+              label={isVerified ? 'Report this listing' : 'Verify identity to report'}
               variant="ghost"
               onPress={onReport}
               fullWidth
@@ -372,17 +381,18 @@ export function ListingDetailScreen({ route, navigation }: Props) {
       {!isOwner && user?.role === 'seeker' ? (
         <View style={styles.contactBar}>
           <Button
-            label="Message agent"
+            label={isVerified ? 'Message agent' : 'Verify identity to message'}
             fullWidth
-            onPress={() =>
+            onPress={() => {
+              if (!isVerified) return promptVerification();
               navigation.navigate('MessageThread', {
                 threadId: `thread-${listingId}-${user.uid}-${agent.uid}`,
                 listingId,
                 agentId: agent.uid,
                 listingTitle: listing.title,
                 agentName: agent.displayName,
-              })
-            }
+              });
+            }}
           />
         </View>
       ) : null}

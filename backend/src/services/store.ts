@@ -39,6 +39,8 @@ interface StoredUser {
   role: UserRole;
   phone?: string;
   avatarUrl?: string;
+  verificationStatus: 'unverified' | 'verified';
+  verifiedAt?: string;
 }
 
 interface StoredListing {
@@ -79,6 +81,7 @@ const users: StoredUser[] = [
     password: 'password123',
     displayName: 'Ayesha Khan',
     role: 'seeker',
+    verificationStatus: 'verified',
   },
   {
     uid: 'agent-danish',
@@ -86,6 +89,7 @@ const users: StoredUser[] = [
     password: 'password123',
     displayName: 'Danish Ahmed',
     role: 'agent',
+    verificationStatus: 'verified',
     phone: '0300-1234567',
   },
   {
@@ -94,6 +98,7 @@ const users: StoredUser[] = [
     password: 'password123',
     displayName: 'Sara Malik',
     role: 'agent',
+    verificationStatus: 'verified',
     phone: '0321-7654321',
   },
 ];
@@ -353,7 +358,17 @@ export function publicUser(u: StoredUser) {
     role: u.role,
     phone: u.phone,
     avatarUrl: u.avatarUrl,
+    verificationStatus: u.verificationStatus,
+    verifiedAt: u.verifiedAt,
   };
+}
+
+export function completeUserVerification(uid: string) {
+  const user = findUserByUid(uid);
+  if (!user) return { ok: false as const };
+  user.verificationStatus = 'verified';
+  user.verifiedAt = new Date().toISOString();
+  return { ok: true as const, user };
 }
 
 export function updateUserProfile(

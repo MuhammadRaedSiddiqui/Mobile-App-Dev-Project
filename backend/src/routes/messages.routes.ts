@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { z } from 'zod';
-import { authenticate } from '@/middleware/auth';
+import { authenticate, requireVerified } from '@/middleware/auth';
 import { validate } from '@/middleware/validate';
 import { Errors } from '@/utils/errors';
 import {
@@ -23,7 +23,7 @@ const sendSchema = z.object({
   seekerUid: z.string().min(1).optional(),
 });
 
-router.post('/', validate(sendSchema), (req: Request, res: Response) => {
+router.post('/', requireVerified, validate(sendSchema), (req: Request, res: Response) => {
   const { listingId, text } = req.body;
   const user = req.user!;
 

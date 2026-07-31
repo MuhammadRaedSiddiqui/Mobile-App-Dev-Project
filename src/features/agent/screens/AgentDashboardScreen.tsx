@@ -41,6 +41,7 @@ export function AgentDashboardScreen() {
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const isVerified = user?.verificationStatus === 'verified';
 
   const load = useCallback(() => {
     if (!user?.uid) return;
@@ -65,6 +66,13 @@ export function AgentDashboardScreen() {
   const viewLabel = totalViews > 999 ? `${(totalViews / 1000).toFixed(1)}k` : String(totalViews);
 
   const onVerify = async (listing: Listing) => {
+    if (!isVerified) {
+      Alert.alert('Verify your identity', 'Complete identity verification before managing listings.', [
+        { text: 'Not now', style: 'cancel' },
+        { text: 'Verify now', onPress: () => navigation.navigate('IdentityVerification') },
+      ]);
+      return;
+    }
     setVerifyingId(listing.listingId);
     try {
       const { freshness } = await trustService.verify(listing.listingId);
@@ -98,6 +106,13 @@ export function AgentDashboardScreen() {
             <Text style={styles.avatarText}>{initials}</Text>
           </View>
         </View>
+
+        {!isVerified ? (
+          <Pressable style={styles.verificationNotice} onPress={() => navigation.navigate('IdentityVerification')}>
+            <Text style={styles.verificationTitle}>Verify identity to manage listings</Text>
+            <Text style={styles.verificationCopy}>Creating, editing, publishing, and re-verifying listings are locked until verification is complete.</Text>
+          </Pressable>
+        ) : null}
 
         {/* Stats Bento Grid */}
         <View style={styles.statsRow}>
@@ -237,6 +252,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   heading: { ...typography.heading, color: colors.textPrimary },
+  verificationNotice: { backgroundColor: colors.staleBg, borderWidth: 1, borderColor: colors.stale, borderRadius: radii.card, padding: spacing.md, marginBottom: spacing.lg },
+  verificationTitle: { ...typography.ui, color: colors.textPrimary, fontWeight: '600' },
+  verificationCopy: { ...typography.caption, color: colors.textSecondary, marginTop: 4, lineHeight: 18 },
   avatar: {
     width: 48,
     height: 48,

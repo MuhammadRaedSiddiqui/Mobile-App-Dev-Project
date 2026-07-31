@@ -48,6 +48,19 @@ export function ProfileScreen() {
           <Text style={styles.rowLabel}>Edit profile</Text>
           <Text style={styles.rowAction}>›</Text>
         </Pressable>
+        <Pressable style={styles.row} onPress={() => navigation.navigate('IdentityVerification')}>
+          <View>
+            <Text style={styles.rowLabel}>Identity verification</Text>
+            <Text style={styles.verificationNote}>
+              {user?.verificationStatus === 'verified'
+                ? 'Verified'
+                : 'Required to verify your account'}
+            </Text>
+          </View>
+          <Text style={[styles.rowAction, user?.verificationStatus === 'verified' && styles.verified]}>
+            {user?.verificationStatus === 'verified' ? '✓' : '›'}
+          </Text>
+        </Pressable>
         {user?.role === 'seeker' ? (
           <>
             <Pressable
@@ -140,5 +153,7 @@ const styles = StyleSheet.create({
   rowLabel: { ...typography.ui, color: colors.textPrimary },
   rowPhase: { ...typography.caption, color: colors.textDisabled },
   rowAction: { ...typography.headingSm, color: colors.textSecondary },
+  verificationNote: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
+  verified: { color: colors.primary },
   logout: { marginTop: spacing.xxl },
 });

@@ -27,6 +27,7 @@ export function MessageThreadScreen({ route, navigation }: Props) {
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const listRef = useRef<FlatList<Message>>(null);
+  const isVerified = user?.verificationStatus === 'verified';
 
   const load = useCallback(() => {
     if (threadId) {
@@ -47,6 +48,13 @@ export function MessageThreadScreen({ route, navigation }: Props) {
   }, [listingTitle, navigation]);
 
   const handleSend = async () => {
+    if (!isVerified) {
+      Alert.alert('Verify your identity', 'Complete identity verification before sending messages.', [
+        { text: 'Not now', style: 'cancel' },
+        { text: 'Verify now', onPress: () => navigation.navigate('IdentityVerification') },
+      ]);
+      return;
+    }
     const trimmed = text.trim();
     if (!trimmed || sending) return;
     setSending(true);
@@ -117,14 +125,14 @@ export function MessageThreadScreen({ route, navigation }: Props) {
             placeholderTextColor={colors.textSecondary}
             multiline
             maxLength={2000}
-            editable={!sending}
+            editable={!sending && isVerified}
           />
           <Pressable
-            style={[styles.sendBtn, (!text.trim() || sending) && styles.sendBtnDisabled]}
+            style={[styles.sendBtn, (isVerified && (!text.trim() || sending)) && styles.sendBtnDisabled]}
             onPress={handleSend}
-            disabled={!text.trim() || sending}
+            disabled={isVerified && (!text.trim() || sending)}
           >
-            <Text style={styles.sendText}>Send</Text>
+            <Text style={styles.sendText}>{isVerified ? 'Send' : 'Verify'}</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>

@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { authenticate, requireRole } from '@/middleware/auth';
+import { authenticate, requireRole, requireVerified } from '@/middleware/auth';
 import { Errors } from '@/utils/errors';
 import { reportLimiter } from '@/middleware/rateLimit';
 import { hasReported, reportListing, verifyListing } from '@/services/store';
@@ -10,7 +10,7 @@ import { reportThresholdReached } from '@/services/visibility';
 const router = Router();
 
 /** Agent-owner re-verify. Resets freshness to now and clears reports. */
-router.post('/:id/verify', authenticate, requireRole('agent'), (req: Request, res: Response) => {
+router.post('/:id/verify', authenticate, requireRole('agent'), requireVerified, (req: Request, res: Response) => {
   const result = verifyListing(req.params.id, req.user!.uid);
   if (!result.ok) {
     if (result.reason === 'not_found') throw Errors.notFound('This listing could not be found.');
@@ -26,7 +26,7 @@ router.post('/:id/verify', authenticate, requireRole('agent'), (req: Request, re
  * `reason` is optional (older clients send no body) but must be one of the known
  * values when present. Every reason counts the same toward suppression.
  */
-router.post('/:id/report', authenticate, reportLimiter, (req: Request, res: Response) => {
+router.post('/:id/report', authenticate, requireVerified, reportLimiter, (req: Request, res: Response) => {
   const raw = req.body?.reason;
   if (raw !== undefined && !REPORT_REASONS.includes(raw)) {
     throw Errors.validation('That report reason is not recognised.');

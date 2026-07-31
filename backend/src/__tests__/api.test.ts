@@ -41,6 +41,49 @@ describe('Estate Ease API (mock mode)', () => {
       expect(res.status).toBe(422);
     });
 
+    it('creates users as unverified and verifies them after document completion', async () => {
+      const registered = await request(app).post('/v1/auth/register').send({
+        email: 'verification-user@example.com',
+        password: 'password123',
+        displayName: 'Verification User',
+        role: 'seeker',
+      });
+      expect(registered.status).toBe(201);
+      expect(registered.body.user.verificationStatus).toBe('unverified');
+
+      const completed = await request(app)
+        .post('/v1/auth/verification/complete')
+        .set({ Authorization: `Bearer ${registered.body.token}` })
+        .send({ documentType: 'national_id' });
+      expect(completed.status).toBe(200);
+      expect(completed.body.user.verificationStatus).toBe('verified');
+      expect(completed.body.user.verifiedAt).toBeTruthy();
+    });
+
+    it('blocks sensitive writes for an unverified account', async () => {
+      const seeker = await request(app).post('/v1/auth/register').send({
+        email: 'unverified-seeker@example.com',
+        password: 'password123',
+        displayName: 'Unverified Seeker',
+        role: 'seeker',
+      });
+      const seekerAuth = { Authorization: `Bearer ${seeker.body.token}` };
+      expect((await request(app).post('/v1/listings/lst-001/report').set(seekerAuth)).status).toBe(403);
+      expect(
+        (await request(app).post('/v1/messages').set(seekerAuth).send({ listingId: 'lst-001', text: 'Hello' })).status,
+      ).toBe(403);
+
+      const agent = await request(app).post('/v1/auth/register').send({
+        email: 'unverified-agent@example.com',
+        password: 'password123',
+        displayName: 'Unverified Agent',
+        role: 'agent',
+      });
+      expect(
+        (await request(app).post('/v1/agent/listings').set({ Authorization: `Bearer ${agent.body.token}` }).send({})).status,
+      ).toBe(403);
+    });
+
     it('updates the authenticated user profile', async () => {
       const token = await loginAs('ayesha@example.com');
       const res = await request(app)

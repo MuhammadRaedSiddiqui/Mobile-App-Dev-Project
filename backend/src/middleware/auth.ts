@@ -40,7 +40,13 @@ export async function authenticate(req: Request, _res: Response, next: NextFunct
     const user = findUserByUid(uid);
     if (!user) throw Errors.unauthorized();
 
-    req.user = { uid: user.uid, email: user.email, role: user.role, displayName: user.displayName };
+    req.user = {
+      uid: user.uid,
+      email: user.email,
+      role: user.role,
+      displayName: user.displayName,
+      verificationStatus: user.verificationStatus,
+    };
     next();
   } catch (err) {
     next(err);
@@ -54,4 +60,13 @@ export function requireRole(role: AuthedUser['role']) {
     if (req.user.role !== role) return next(Errors.forbidden(`This action is for ${role}s only.`));
     next();
   };
+}
+
+/** Sensitive writes require a completed identity-verification flow. */
+export function requireVerified(req: Request, _res: Response, next: NextFunction): void {
+  if (!req.user) return next(Errors.unauthorized());
+  if (req.user.verificationStatus !== 'verified') {
+    return next(Errors.forbidden('Verify your identity before using this feature.'));
+  }
+  next();
 }

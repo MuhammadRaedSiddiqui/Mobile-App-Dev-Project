@@ -9,7 +9,7 @@ import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { config } from '@/config/env';
 import { getDb, getFirebaseAuth, isFirebaseConfigured } from '@/firebase';
 import { MOCK_USERS } from '@/mocks/data';
-import { UserProfile, UserRole } from '@/utils/types';
+import { IdentityDocumentType, UserProfile, UserRole } from '@/utils/types';
 
 export interface AuthResult {
   token: string;
@@ -70,6 +70,7 @@ async function firebaseProfile(uid: string, fallback: UserProfile): Promise<User
     email: data.email ?? fallback.email,
     displayName: data.displayName ?? fallback.displayName,
     role: data.role === 'agent' ? 'agent' : 'seeker',
+    verificationStatus: data.verificationStatus === 'unverified' ? 'unverified' : 'verified',
   };
 }
 
@@ -95,6 +96,7 @@ export const authService = {
         displayName: credential.user.displayName ?? email.trim().split('@')[0],
         role: 'seeker',
         isActive: true,
+        verificationStatus: 'verified',
       };
       return {
         token: await credential.user.getIdToken(),
@@ -116,6 +118,7 @@ export const authService = {
         role: input.role,
         phone: input.role === 'agent' ? input.phone : undefined,
         isActive: true,
+        verificationStatus: 'unverified',
         password: input.password,
       };
       mockUsers.push(user);
@@ -140,6 +143,7 @@ export const authService = {
         role: input.role,
         phone: input.role === 'agent' ? input.phone : undefined,
         isActive: true,
+        verificationStatus: 'unverified',
       };
       await setDoc(doc(db, 'users', user.uid), {
         ...user,
@@ -172,6 +176,7 @@ export const authService = {
       displayName: user.displayName ?? user.email?.split('@')[0] ?? 'Estate Ease user',
       role: 'seeker',
       isActive: true,
+      verificationStatus: 'verified',
     });
   },
 
@@ -201,6 +206,40 @@ export const authService = {
       displayName: patch.displayName ?? user.displayName ?? 'Estate Ease user',
       role: 'seeker',
       isActive: true,
+      verificationStatus: 'verified',
+    });
+  },
+
+  /** Records successful completion of the in-app document capture flow. */
+  async completeVerification(documentType: IdentityDocumentType, uid?: string): Promise<UserProfile> {
+    if (config.useMockData) {
+      const found = mockUsers.find((user) => user.uid === (uid ?? currentMockUid));
+      if (!found) throw new Error('User not found.');
+      found.verificationStatus = 'verified';
+      found.verifiedAt = new Date().toISOString();
+      return delay(stripPassword(found));
+    }
+    const user = getFirebaseAuth()?.currentUser;
+    const db = getDb();
+    if (!user || !db || (uid && uid !== user.uid))
+      throw new Error('Your session has expired. Please log in again.');
+    await setDoc(
+      doc(db, 'users', user.uid),
+      {
+        verificationStatus: 'verified',
+        verifiedAt: serverTimestamp(),
+        verificationDocumentType: documentType,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    );
+    return firebaseProfile(user.uid, {
+      uid: user.uid,
+      email: user.email ?? '',
+      displayName: user.displayName ?? 'Estate Ease user',
+      role: 'seeker',
+      isActive: true,
+      verificationStatus: 'verified',
     });
   },
 };

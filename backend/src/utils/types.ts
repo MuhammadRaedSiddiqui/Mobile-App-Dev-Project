@@ -40,4 +40,5 @@ export interface AuthedUser {
   email?: string;
   role: UserRole;
   displayName: string;
+  verificationStatus: 'unverified' | 'verified';
 }

@@ -440,6 +440,7 @@ export const MOCK_USERS: Array<UserProfile & { password: string }> = [
     displayName: 'Ayesha Khan',
     role: 'seeker',
     isActive: true,
+    verificationStatus: 'verified',
   },
   {
     uid: 'agent-danish',
@@ -449,5 +450,6 @@ export const MOCK_USERS: Array<UserProfile & { password: string }> = [
     role: 'agent',
     phone: '0300-1234567',
     isActive: true,
+    verificationStatus: 'verified',
   },
 ];

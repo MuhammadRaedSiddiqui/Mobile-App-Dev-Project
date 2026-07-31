@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '@/utils/constants';
-import { UserProfile } from '@/utils/types';
+import { IdentityDocumentType, UserProfile } from '@/utils/types';
 import { authService, RegisterInput, setAuthTokenProvider } from '@/services';
 
 interface PersistedSession {
@@ -89,6 +89,16 @@ export const updateProfile = createAsyncThunk(
   },
 );
 
+export const completeVerification = createAsyncThunk(
+  'auth/completeVerification',
+  async (documentType: IdentityDocumentType, { getState }) => {
+    const state = getState() as { auth: AuthState };
+    const user = await authService.completeVerification(documentType, state.auth.user?.uid);
+    if (state.auth.token) await persistSession({ token: state.auth.token, user });
+    return user;
+  },
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -147,6 +157,9 @@ const authSlice = createSlice({
         state.status = 'unauthenticated';
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
+        state.user = action.payload;
+      })
+      .addCase(completeVerification.fulfilled, (state, action) => {
         state.user = action.payload;
       });
   },

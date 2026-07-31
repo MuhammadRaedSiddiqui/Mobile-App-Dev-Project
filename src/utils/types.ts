@@ -7,12 +7,16 @@
  */
 
 export type UserRole = 'seeker' | 'agent';
+export type VerificationStatus = 'unverified' | 'verified';
+export type IdentityDocumentType = 'passport' | 'drivers_license' | 'national_id';
 
 export interface UserProfile {
   uid: string;
   email: string;
   displayName: string;
   role: UserRole;
+  verificationStatus: VerificationStatus;
+  verifiedAt?: string;
   phone?: string;
   avatarUrl?: string;
   createdAt?: string;

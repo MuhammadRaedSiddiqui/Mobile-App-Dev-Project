@@ -48,6 +48,8 @@ export type MainStackParamList = {
   ProfileEdit: undefined;
   AgentProfile: { agentId: string };
   NotificationSettings: undefined;
+  IdentityVerification: undefined;
+  VerificationResult: { outcome: 'success' | 'failed' };
   SavedSearches: undefined;
   Messages: undefined;
   MessageThread: { threadId: string; listingId: string; agentId: string; listingTitle?: string; agentName?: string };

@@ -5,6 +5,8 @@ import { ReportListingScreen } from '@/features/listings/screens/ReportListingSc
 import { ListingFormScreen } from '@/features/agent/screens/ListingFormScreen';
 import { ProfileEditScreen } from '@/features/auth/screens/ProfileEditScreen';
 import { NotificationSettingsScreen } from '@/features/auth/screens/NotificationSettingsScreen';
+import { IdentityVerificationScreen } from '@/features/auth/screens/IdentityVerificationScreen';
+import { VerificationResultScreen } from '@/features/auth/screens/VerificationResultScreen';
 import { SavedSearchesScreen } from '@/features/search/screens/SavedSearchesScreen';
 import { AgentProfileScreen } from '@/features/agent/screens/AgentProfileScreen';
 import { MessagesScreen } from '@/features/messages/screens/MessagesScreen';
@@ -20,25 +22,29 @@ const Stack = createNativeStackNavigator<MainStackParamList>();
 
 /** Agent-only gate for the listing create/edit form. */
 function AgentListingForm(props: NativeStackScreenProps<MainStackParamList, 'ListingForm'>) {
-  const role = useAppSelector((s) => s.auth.user?.role);
+  const user = useAppSelector((s) => s.auth.user);
   useEffect(() => {
-    if (role !== 'agent') {
+    if (user?.role !== 'agent') {
       props.navigation.replace('NotFound');
+    } else if (user.verificationStatus !== 'verified') {
+      props.navigation.replace('IdentityVerification');
     }
-  }, [role, props.navigation]);
-  if (role !== 'agent') return null;
+  }, [user, props.navigation]);
+  if (user?.role !== 'agent' || user.verificationStatus !== 'verified') return null;
   return <ListingFormScreen {...props} />;
 }
 
 /** Seeker-only gate: agents re-verify their own listings, they don't report them. */
 function SeekerReportListing(props: NativeStackScreenProps<MainStackParamList, 'ReportListing'>) {
-  const role = useAppSelector((s) => s.auth.user?.role);
+  const user = useAppSelector((s) => s.auth.user);
   useEffect(() => {
-    if (role !== 'seeker') {
+    if (user?.role !== 'seeker') {
       props.navigation.replace('NotFound');
+    } else if (user.verificationStatus !== 'verified') {
+      props.navigation.replace('IdentityVerification');
     }
-  }, [role, props.navigation]);
-  if (role !== 'seeker') return null;
+  }, [user, props.navigation]);
+  if (user?.role !== 'seeker' || user.verificationStatus !== 'verified') return null;
   return <ReportListingScreen {...props} />;
 }
 
@@ -74,6 +80,8 @@ export function MainNavigator() {
         component={NotificationSettingsScreen}
         options={{ headerShown: true, title: 'Notifications' }}
       />
+      <Stack.Screen name="IdentityVerification" component={IdentityVerificationScreen} />
+      <Stack.Screen name="VerificationResult" component={VerificationResultScreen} />
       <Stack.Screen
         name="SavedSearches"
         component={SavedSearchesScreen}

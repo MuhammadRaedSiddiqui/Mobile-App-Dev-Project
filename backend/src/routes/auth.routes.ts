@@ -6,6 +6,7 @@ import { config } from '@/config/env';
 import { Errors } from '@/utils/errors';
 import { authLimiter } from '@/middleware/rateLimit';
 import {
+  completeUserVerification,
   createUser,
   findUserByEmail,
   findUserByUid,
@@ -50,8 +51,19 @@ router.post('/register', authLimiter, validate(registerSchema), (req: Request, r
     displayName,
     role,
     phone: role === 'agent' ? phone : undefined,
+    verificationStatus: 'unverified',
   });
   res.status(201).json({ success: true, token: mockTokenFor(user.uid), user: publicUser(user) });
+});
+
+const verificationSchema = z.object({
+  documentType: z.enum(['passport', 'drivers_license', 'national_id']),
+});
+
+router.post('/verification/complete', authenticate, validate(verificationSchema), (req: Request, res: Response) => {
+  const result = completeUserVerification(req.user!.uid);
+  if (!result.ok) throw Errors.notFound('User not found.');
+  res.json({ success: true, user: publicUser(result.user) });
 });
 
 router.post('/login', authLimiter, validate(loginSchema), (req: Request, res: Response) => {

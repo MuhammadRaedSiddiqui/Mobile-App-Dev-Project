@@ -1,7 +1,7 @@
 import { Request, Response, Router, NextFunction } from 'express';
 import multer, { MulterError } from 'multer';
 import { z } from 'zod';
-import { authenticate, requireRole } from '@/middleware/auth';
+import { authenticate, requireRole, requireVerified } from '@/middleware/auth';
 import { validate } from '@/middleware/validate';
 import { Errors, AppError } from '@/utils/errors';
 import {
@@ -102,6 +102,7 @@ router.get('/listings', (req: Request, res: Response) => {
  */
 router.post(
   '/listings/images',
+  requireVerified,
   uploadLimiter,
   runUpload,
   async (req: Request, res: Response, next: NextFunction) => {
@@ -118,7 +119,7 @@ router.post(
 });
 
 /** POST /v1/agent/listings — create a new listing. */
-router.post('/listings', validate(createSchema), (req: Request, res: Response) => {
+router.post('/listings', requireVerified, validate(createSchema), (req: Request, res: Response) => {
   const body = req.body as z.infer<typeof createSchema>;
 
   const check = validateListingInput({
@@ -137,7 +138,7 @@ router.post('/listings', validate(createSchema), (req: Request, res: Response) =
 });
 
 /** PUT /v1/agent/listings/:id — update own listing. */
-router.put('/listings/:id', validate(updateSchema), (req: Request, res: Response) => {
+router.put('/listings/:id', requireVerified, validate(updateSchema), (req: Request, res: Response) => {
   const body = req.body as z.infer<typeof updateSchema>;
   const result = updateListing(req.params.id, req.user!.uid, body);
   if (!result.ok) {
@@ -148,7 +149,7 @@ router.put('/listings/:id', validate(updateSchema), (req: Request, res: Response
 });
 
 /** DELETE /v1/agent/listings/:id — soft-delete own listing. */
-router.delete('/listings/:id', (req: Request, res: Response) => {
+router.delete('/listings/:id', requireVerified, (req: Request, res: Response) => {
   const result = deleteListing(req.params.id, req.user!.uid);
   if (!result.ok) {
     if (result.reason === 'forbidden') throw Errors.forbidden('You can only delete your own listings.');
