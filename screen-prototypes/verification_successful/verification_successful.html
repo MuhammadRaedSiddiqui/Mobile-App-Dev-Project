@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Identity Verified - Estate Ease</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#5f5e5e",
+                        "white": "#ffffff",
+                        "surface-container": "#efeded",
+                        "secondary-container": "#e2dfde",
+                        "surface-variant": "#e4e2e2",
+                        "primary": "#ba0036",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#fffbff",
+                        "surface-container-highest": "#e4e2e2",
+                        "tertiary-container": "#008558",
+                        "on-primary-fixed": "#40000d",
+                        "outline": "#906f70",
+                        "on-tertiary-fixed": "#002113",
+                        "inverse-primary": "#ffb2b6",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed-variant": "#474746",
+                        "surface": "#fbf9f8",
+                        "primary-container": "#e21e4a",
+                        "deco": "#dddddd",
+                        "rausch-600": "#e00b41",
+                        "on-background": "#1b1c1c",
+                        "background": "#fbf9f8",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "secondary-fixed": "#e5e2e1",
+                        "grey-500": "#c1c1c1",
+                        "on-surface-variant": "#5c3f41",
+                        "tertiary-fixed-dim": "#62dca3",
+                        "on-secondary-container": "#636262",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f2f0f0",
+                        "tertiary": "#006a45",
+                        "surface-container-high": "#e9e8e7",
+                        "on-tertiary-fixed-variant": "#005234",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#be0038",
+                        "bebe": "#ebebeb",
+                        "surface-container-low": "#f5f3f3",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "faint": "#f7f7f7",
+                        "tertiary-fixed": "#80f9bd",
+                        "surface-bright": "#fbf9f8",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#920029",
+                        "inverse-surface": "#303031",
+                        "primary-fixed": "#ffdada",
+                        "primary-fixed-dim": "#ffb2b6",
+                        "on-tertiary-container": "#f6fff6",
+                        "on-surface": "#1b1c1c",
+                        "outline-variant": "#e5bdbe",
+                        "surface-dim": "#dbdad9",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "16px",
+                        "xs": "4px",
+                        "xl": "24px",
+                        "page-margin": "40px",
+                        "md": "12px",
+                        "section-gap": "48px",
+                        "sm": "8px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "ui-label": ["Plus Jakarta Sans"],
+                        "caption": ["Plus Jakarta Sans"],
+                        "subheading": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"],
+                        "heading-sm": ["Plus Jakarta Sans"],
+                        "heading-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "ui-label": ["16px", {"lineHeight": "1.25", "letterSpacing": "normal", "fontWeight": "500"}],
+                        "caption": ["11px", {"lineHeight": "1.18", "letterSpacing": "normal", "fontWeight": "600"}],
+                        "subheading": ["20px", {"lineHeight": "1.2", "letterSpacing": "-0.009em", "fontWeight": "600"}],
+                        "body": ["14px", {"lineHeight": "1.43", "letterSpacing": "normal", "fontWeight": "400"}],
+                        "heading-sm": ["22px", {"lineHeight": "1.18", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                        "heading-lg": ["28px", {"lineHeight": "1.43", "letterSpacing": "normal", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .success-animation {
+            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+        @keyframes scaleIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .confetti-canvas {
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<!-- Top Navigation Anchor (As per Shared Components JSON) -->
+<!-- Navigation is suppressed for Task-Focused Success screens per "Shell Visibility & Relevance" rule -->
+<header class="fixed top-0 w-full z-50 bg-white border-b border-bebe h-20 px-page-margin flex items-center max-w-[1440px] mx-auto left-0 right-0 justify-center">
+<h1 class="font-heading-sm text-heading-sm text-on-surface">Identity Verification</h1>
+</header>
+<main class="flex-grow flex items-center justify-center px-page-margin pt-20 pb-24 relative overflow-hidden">
+<!-- Confetti Background Layer -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden" id="confetti-container"></div>
+<div class="max-w-[480px] w-full text-center z-10 flex flex-col items-center">
+<!-- Success Badge -->
+<div class="success-animation mb-xl">
+<div class="w-24 h-24 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-[48px]" style="font-variation-settings: 'FILL' 1, 'wght' 700;">check_circle</span>
+</div>
+</div>
+<!-- Header Content -->
+<h2 class="font-heading-sm text-heading-sm text-on-surface mb-md">
+                Identity verified
+            </h2>
+<!-- Supporting Text -->
+<p class="font-body text-body text-secondary mb-section-gap leading-relaxed max-w-[360px]">
+                Your identity has been successfully verified. Your information is encrypted and stored securely. You can now continue with your booking.
+            </p>
+<!-- Action Button -->
+<button class="w-full sm:w-auto px-12 py-4 bg-primary text-white font-ui-label text-ui-label rounded-full hover:bg-rausch-600 transition-all duration-300 active:scale-95 shadow-md shadow-primary/10">
+                Continue
+            </button>
+</div>
+</main>
+<!-- Footer Anchor (As per Shared Components JSON) -->
+<footer class="fixed bottom-0 w-full z-50 bg-white border-t border-bebe">
+<div class="flex justify-between items-center py-lg px-page-margin max-w-[1440px] mx-auto">
+<span class="font-caption text-caption text-secondary">© 2024 RentalApp Identity Services</span>
+<div class="flex gap-xl">
+<a class="font-body text-body text-secondary hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-body text-body text-secondary hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+<script>
+        // Atmospheric Micro-interaction: Subtle floating confetti effect on entry
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#ba0036', '#e21e4a', '#ffb2b6', '#f2f0f0'];
+            
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                const size = Math.random() * 8 + 4;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                confetti.style.position = 'absolute';
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                confetti.style.backgroundColor = color;
+                confetti.style.borderRadius = '2px';
+                confetti.style.top = '-20px';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.opacity = Math.random();
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                container.appendChild(confetti);
+                
+                const duration = Math.random() * 3 + 2;
+                const delay = Math.random() * 2;
+                
+                confetti.animate([
+                    { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                ], {
+                    duration: duration * 1000,
+                    delay: delay * 1000,
+                    easing: 'cubic-bezier(.37,0,.63,1)',
+                    fill: 'forwards'
+                });
+
+                // Cleanup
+                setTimeout(() => confetti.remove(), (duration + delay) * 1000);
+            }
+        }
+
+        // Trigger confetti on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(createConfetti, 300);
+        });
+
+        // Button interaction
+        const continueBtn = document.querySelector('button');
+        continueBtn.addEventListener('click', () => {
+            continueBtn.innerHTML = '<span class="flex items-center gap-2"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Loading...</span>';
+            setTimeout(() => {
+                // Mock redirect
+                console.log('Redirecting to next booking step...');
+            }, 800);
+        });
+    </script>
+</body></html>

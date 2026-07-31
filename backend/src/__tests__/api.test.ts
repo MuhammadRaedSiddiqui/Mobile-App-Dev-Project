@@ -631,3 +631,32 @@ describe('Phase 8 — notifications & saved searches', () => {
     expect(res.status).toBe(403);
   });
 });
+
+describe('messages', () => {
+  it('lets an agent reply to the seeker who opened a listing conversation', async () => {
+    const seekerToken = await loginAs('ayesha@example.com');
+    const agentToken = await loginAs('danish@example.com');
+
+    const inquiry = await request(app)
+      .post('/v1/messages')
+      .set({ Authorization: `Bearer ${seekerToken}` })
+      .send({ listingId: 'lst-001', text: 'Is this still available?' });
+    expect(inquiry.status).toBe(201);
+
+    const reply = await request(app)
+      .post('/v1/messages')
+      .set({ Authorization: `Bearer ${agentToken}` })
+      .send({
+        listingId: 'lst-001',
+        seekerUid: 'seeker-ayesha',
+        text: 'Yes, it is available.',
+      });
+
+    expect(reply.status).toBe(201);
+    expect(reply.body.message).toMatchObject({
+      fromUid: 'agent-danish',
+      toUid: 'seeker-ayesha',
+      threadId: inquiry.body.message.threadId,
+    });
+  });
+});

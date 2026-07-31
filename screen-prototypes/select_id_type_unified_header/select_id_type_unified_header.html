@@ -1,0 +1,195 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Identity Verification - Estate Ease</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#e2dfde",
+                        "surface-bright": "#fbf9f8",
+                        "outline": "#906f70",
+                        "tertiary": "#006a45",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-surface": "#1b1c1c",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#fbf9f8",
+                        "surface-container-highest": "#e4e2e2",
+                        "on-tertiary-fixed-variant": "#005234",
+                        "white": "#ffffff",
+                        "tertiary-fixed-dim": "#62dca3",
+                        "tertiary-container": "#008558",
+                        "on-primary-fixed": "#40000d",
+                        "on-background": "#1b1c1c",
+                        "error-container": "#ffdad6",
+                        "bebe": "#ebebeb",
+                        "on-primary-fixed-variant": "#920029",
+                        "on-primary-container": "#fffbff",
+                        "rausch-600": "#e00b41",
+                        "on-error": "#ffffff",
+                        "faint": "#f7f7f7",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#f6fff6",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "tertiary-fixed": "#80f9bd",
+                        "surface-tint": "#be0038",
+                        "surface-dim": "#dbdad9",
+                        "primary-fixed-dim": "#ffb2b6",
+                        "on-secondary-fixed-variant": "#474746",
+                        "outline-variant": "#e5bdbe",
+                        "on-surface-variant": "#5c3f41",
+                        "grey-500": "#c1c1c1",
+                        "surface-container-high": "#e9e8e7",
+                        "surface-container": "#efeded",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e4e2e2",
+                        "surface-container-low": "#f5f3f3",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f2f0f0",
+                        "deco": "#dddddd",
+                        "on-tertiary-fixed": "#002113",
+                        "secondary": "#5f5e5e",
+                        "primary-container": "#e21e4a",
+                        "on-secondary-container": "#636262",
+                        "inverse-surface": "#303031",
+                        "primary": "#ba0036",
+                        "primary-fixed": "#ffdada",
+                        "inverse-primary": "#ffb2b6",
+                        "background": "#fbf9f8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "page-margin": "40px",
+                        "xl": "24px",
+                        "xs": "4px",
+                        "lg": "16px",
+                        "unit": "4px",
+                        "section-gap": "48px",
+                        "md": "12px"
+                    },
+                    "fontFamily": {
+                        "caption": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"],
+                        "ui-label": ["Plus Jakarta Sans"],
+                        "heading-lg": ["Plus Jakarta Sans"],
+                        "subheading": ["Plus Jakarta Sans"],
+                        "heading-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "caption": ["11px", { "lineHeight": "1.18", "letterSpacing": "normal", "fontWeight": "600" }],
+                        "body": ["14px", { "lineHeight": "1.43", "letterSpacing": "normal", "fontWeight": "400" }],
+                        "ui-label": ["16px", { "lineHeight": "1.25", "letterSpacing": "normal", "fontWeight": "500" }],
+                        "heading-lg": ["28px", { "lineHeight": "1.43", "letterSpacing": "normal", "fontWeight": "700" }],
+                        "subheading": ["20px", { "lineHeight": "1.2", "letterSpacing": "-0.009em", "fontWeight": "600" }],
+                        "heading-sm": ["22px", { "lineHeight": "1.18", "letterSpacing": "-0.02em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-white dark:bg-surface border-b border-bebe dark:border-outline-variant transition-colors duration-200 ease-in-out"><div class="flex flex-col items-center w-full max-w-[1440px] mx-auto px-page-margin py-sm relative"><div class="flex items-center w-full relative"><button class="absolute left-0 p-sm -ml-sm rounded-full hover:bg-faint transition-colors text-on-background"><span class="material-symbols-outlined">arrow_back</span></button><div class="flex-1 flex flex-col items-center text-center"><h1 class="font-heading-sm text-heading-sm text-on-background">Identity Verification</h1><p class="font-caption text-caption text-secondary">Step 2 of 3</p></div></div><div class="flex gap-1 mt-2 w-full max-w-[120px]"><div class="h-1 flex-1 rounded-full bg-on-background"></div><div class="h-1 flex-1 rounded-full bg-on-background"></div><div class="h-1 flex-1 rounded-full bg-bebe"></div></div></div></header>
+<!-- Main Content Canvas -->
+<main class="flex-1 mt-20 mb-[100px] flex justify-center w-full px-page-margin py-section-gap max-w-[1440px] mx-auto">
+<div class="w-full max-w-lg flex flex-col gap-xl">
+<!-- Header Section -->
+<div class="flex flex-col gap-sm text-center md:text-left">
+<h2 class="font-heading-lg text-heading-lg text-on-background">Select your ID type</h2>
+<p class="font-body text-body text-secondary">We need a government-issued photo ID to verify your identity. Your information is encrypted and stored securely.</p>
+</div>
+<!-- ID Type Selection Form -->
+<form class="flex flex-col gap-md" id="id-selection-form">
+<!-- Option: Passport -->
+<label class="flex items-center justify-between p-lg rounded-xl border border-deco cursor-pointer hover:border-on-background transition-colors bg-white group">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary group-hover:text-on-background transition-colors">description</span>
+<span class="font-ui-label text-ui-label text-on-background">Passport</span>
+</div>
+<div class="relative flex items-center justify-center">
+<input class="peer appearance-none w-6 h-6 border-2 border-surface-dim rounded-full checked:border-on-background checked:border-[6px] transition-all cursor-pointer" name="id_type" type="radio" value="passport">
+</div>
+</label>
+<!-- Option: Driver's license -->
+<label class="flex items-center justify-between p-lg rounded-xl border border-deco cursor-pointer hover:border-on-background transition-colors bg-white group">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary group-hover:text-on-background transition-colors">drive_eta</span>
+<span class="font-ui-label text-ui-label text-on-background">Driver's license</span>
+</div>
+<div class="relative flex items-center justify-center">
+<input class="peer appearance-none w-6 h-6 border-2 border-surface-dim rounded-full checked:border-on-background checked:border-[6px] transition-all cursor-pointer" name="id_type" type="radio" value="drivers_license">
+</div>
+</label>
+<!-- Option: National ID card -->
+<label class="flex items-center justify-between p-lg rounded-xl border border-deco cursor-pointer hover:border-on-background transition-colors bg-white group">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary group-hover:text-on-background transition-colors">badge</span>
+<span class="font-ui-label text-ui-label text-on-background">National ID card</span>
+</div>
+<div class="relative flex items-center justify-center">
+<input class="peer appearance-none w-6 h-6 border-2 border-surface-dim rounded-full checked:border-on-background checked:border-[6px] transition-all cursor-pointer" name="id_type" type="radio" value="national_id">
+</div>
+</label>
+</form>
+</div>
+</main>
+<!-- Bottom Action Area -->
+<div class="fixed bottom-0 w-full z-50 bg-white border-t border-bebe py-lg px-page-margin flex justify-center">
+<div class="w-full max-w-lg flex justify-between items-center">
+<button class="font-ui-label text-ui-label text-secondary hover:text-on-background transition-colors underline decoration-solid decoration-1 underline-offset-4">
+                How identity verification works
+            </button>
+<button class="bg-on-background text-white rounded-full px-8 py-4 font-ui-label text-ui-label opacity-50 cursor-not-allowed transition-all hover:bg-inverse-surface disabled:hover:bg-on-background" disabled="" id="continue-btn">
+                Continue
+            </button>
+</div>
+</div>
+<script>
+        const form = document.getElementById('id-selection-form');
+        const continueBtn = document.getElementById('continue-btn');
+        const radioButtons = form.querySelectorAll('input[type="radio"]');
+        const labels = form.querySelectorAll('label');
+
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (form.querySelector('input[name="id_type"]:checked')) {
+                    continueBtn.disabled = false;
+                    continueBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    continueBtn.classList.add('active:scale-95');
+                }
+                
+                // Optional: visual highlighting of selected row
+                labels.forEach(l => l.classList.remove('border-on-background', 'bg-faint'));
+                if(radio.checked) {
+                    radio.closest('label').classList.add('border-on-background', 'bg-faint');
+                }
+            });
+        });
+    </script>
+
+
+</body></html>

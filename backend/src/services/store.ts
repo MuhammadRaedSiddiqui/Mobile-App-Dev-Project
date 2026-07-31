@@ -209,7 +209,6 @@ export function createMessage(input: {
   toUid: string;
   text: string;
 }): MessageRecord {
-  const listing = rawListing(input.listingId);
   const seekerUid = findUserByUid(input.fromUid)?.role === 'seeker' ? input.fromUid : input.toUid;
   const agentUid = input.fromUid === seekerUid ? input.toUid : input.fromUid;
   const threadId = buildThreadId(input.listingId, seekerUid, agentUid);

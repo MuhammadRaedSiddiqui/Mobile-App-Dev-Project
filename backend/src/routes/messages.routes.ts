@@ -19,6 +19,7 @@ router.use(authenticate);
 const sendSchema = z.object({
   listingId: z.string().min(1),
   text: z.string().min(1).max(2000),
+  seekerUid: z.string().min(1).optional(),
 });
 
 router.post('/', validate(sendSchema), (req: Request, res: Response) => {
