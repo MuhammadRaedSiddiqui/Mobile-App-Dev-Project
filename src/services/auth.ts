@@ -163,8 +163,9 @@ export const authService = {
     if (auth) await signOut(auth);
   },
 
-  async me(): Promise<UserProfile> {
+  async me(uid?: string): Promise<UserProfile> {
     if (config.useMockData) {
+      if (uid) currentMockUid = uid;
       const found = mockUsers.find((user) => user.uid === currentMockUid) ?? mockUsers[0];
       return delay(stripPassword(found));
     }

@@ -89,7 +89,7 @@ const users: StoredUser[] = [
     password: 'password123',
     displayName: 'Raed',
     role: 'seeker',
-    verificationStatus: 'verified',
+    verificationStatus: 'unverified',
   },
   {
     uid: 'agent-danish',

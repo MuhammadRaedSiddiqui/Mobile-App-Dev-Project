@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { config } from '@/config/env';
 import { STORAGE_KEYS } from '@/utils/constants';
 import { IdentityDocumentType, UserProfile } from '@/utils/types';
 import { authService, RegisterInput, setAuthTokenProvider } from '@/services';
@@ -37,7 +38,18 @@ async function persistSession(session: PersistedSession | null): Promise<void> {
 export const restoreSession = createAsyncThunk('auth/restore', async () => {
   const raw = await AsyncStorage.getItem(STORAGE_KEYS.authSession);
   if (!raw) return null;
-  return JSON.parse(raw) as PersistedSession;
+  const session = JSON.parse(raw) as PersistedSession;
+
+  // Mock users are seeded in code, so refresh a saved profile when restoring.
+  // This prevents a stale AsyncStorage snapshot from overriding seed changes.
+  if (config.useMockData) {
+    const user = await authService.me(session.user.uid);
+    const refreshedSession = { ...session, user };
+    await persistSession(refreshedSession);
+    return refreshedSession;
+  }
+
+  return session;
 });
 
 export const login = createAsyncThunk(
