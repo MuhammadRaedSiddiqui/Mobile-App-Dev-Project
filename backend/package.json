@@ -10,6 +10,7 @@
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
     "seed": "ts-node -r tsconfig-paths/register src/scripts/seed.ts",
+    "seed:firestore": "ts-node -r tsconfig-paths/register src/scripts/seedFirestore.ts",
     "reset": "ts-node -r tsconfig-paths/register src/scripts/reset.ts",
     "lint": "eslint . --ext .ts",
     "test": "jest",
