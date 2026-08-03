@@ -137,6 +137,12 @@ Phase 9 is final hardening, documentation, and handover: regression polish, QA e
 
 ### Docs
 
+**Planning & Roadmap:**
+- [Production Checklist](docs/PRODUCTION_CHECKLIST.md) — **Start here!** Interactive checklist with quick wins
+- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md) — Detailed 9-phase plan (10-13 weeks)
+- [Roadmap](docs/ROADMAP.md) — Visual timeline, milestones, and resource allocation
+
+**Technical Documentation:**
 - [Manual QA matrix](docs/qa-manual-matrix.md)
 - [API reference](docs/api.md)
 - [Release notes](docs/RELEASE_NOTES.md)
